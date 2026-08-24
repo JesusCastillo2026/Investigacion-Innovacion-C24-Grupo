@@ -22,7 +22,7 @@ El prototipo está diseñado para ser accesible, replicable y estar contenido en
 * **Indicadores:** LED de estado (verde/amarillo/rojo).
 
 ## 📂 Estructura del Repositorio
-* `/docs` o `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
+* `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
 * `/hardware`: Esquemas de conexiones y distribución de los componentes electrónicos.
 * `/software`: Código fuente en C++ (sketch) para procesar las lecturas en el Arduino Uno.
 
