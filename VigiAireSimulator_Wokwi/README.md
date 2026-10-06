@@ -1,33 +1,35 @@
-# VigiAire: Estación de Monitoreo y Alerta por Horarios de Tráfico 🍃
+# VigiAire en Wokwi
 
-**Reto 1:** Visualización de Datos Ambientales
-**Curso:** Investigación e Innovación Tecnológica (Sección C24)
-**Carrera:** Diseño y Desarrollo de Software
+**[Abrir la simulación interactiva en Wokwi](https://wokwi.com/projects/477156380361620481)**
 
-## 📝 Descripción del Proyecto
-VigiAire es un dispositivo diseñado para instalarse en la ventana o balcón de una vivienda cercana a avenidas de alto tráfico. El sistema mide continuamente los niveles de PM2.5 y PM10, cruza esa lectura con los horarios pico de tráfico registrados (mediante un reloj RTC) y muestra en una pantalla LCD una recomendación clara: "ventilar ahora" o "esperar".
+Prototipo virtual inicial del módulo VigiAire. Simula una entrada variable, presenta el valor en una LCD 16×2 y activa un indicador LED según el rango.
 
-Este proyecto nace para resolver el problema de los vecinos que carecen de datos en tiempo real y suelen abrir sus ventanas en horas de alta toxicidad sin darse cuenta.
+## Archivos
 
-## ⚙️ Características Principales
-* **Lectura por horarios pico:** Registra el material particulado y lo cruza con las horas de mayor tráfico de microbuses.
-* **Alerta Inteligente:** Indica de forma directa si es buen momento para ventilar.
-* **Señalización Visual Fácil:** Uso de un LED indicador para reforzar visualmente el nivel de contaminación, evitando que el usuario tenga que interpretar cifras técnicas.
+- `sketch.ino`: programa C++ para Arduino Uno.
+- `diagram.json`: conexiones del Arduino Uno, potenciómetro, LCD 16×2 y LEDs con resistencias.
+- `libraries.txt`: biblioteca requerida (`LiquidCrystal`).
 
-## 🛠️ Hardware y Componentes
-El prototipo está diseñado para ser accesible, replicable y estar contenido en una caja de madera MDF:
-* **Microcontrolador:** Arduino Uno.
-* **Sensores:** Sensor de partículas (PM2.5/PM10) y Sensor DHT11 (Temperatura/Humedad).
-* **Módulos:** Módulo RTC (Reloj en tiempo real) y Pantalla LCD 16x2.
-* **Indicadores:** LED de estado (verde/amarillo/rojo).
+## Abrir y ejecutar en Wokwi
 
-## 📂 Estructura del Repositorio
-* `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
-* `/hardware`: Esquemas de conexiones y distribución de los componentes electrónicos.
-* `/software`: Recursos y documentación del software del proyecto.
-* `/VigiAireSimulator_Wokwi`: Simulación Arduino Uno para Wokwi, con sketch C++, diagrama del circuito y guías de uso.
+1. Abre la [simulación interactiva de VigiAire](https://wokwi.com/projects/477156380361620481).
+2. Copia el contenido de `sketch.ino` y reemplaza el del editor.
+3. Reemplaza el contenido de `diagram.json` con el diagrama de esta carpeta.
+4. En Library Manager instala `LiquidCrystal`.
+5. Inicia la simulación y abre el Monitor Serial. Mueve el potenciómetro para variar la lectura.
 
-## 🤖 Uso de IA en el proceso
-En la fase de ideación y diseño se utilizaron las siguientes herramientas:
-* **Claude (Anthropic):** Apoyo para organizar la lluvia de ideas, redactar insights y seleccionar la propuesta.
-* **Google Gemini:** Generación de la representación visual técnica del prototipo (boceto, esquema de conexiones y vistas interna/externa) manteniendo las características definidas por el equipo.
+## Cómo funciona
+
+El potenciómetro conectado a A0 representa una señal de lectura, que el programa convierte a un rango ilustrativo de 5 a 80 µg/m³. La LCD y el Monitor Serial muestran el valor y la recomendación; se enciende el LED verde, amarillo o rojo según los umbrales de demostración de 15 y 35 µg/m³.
+
+## Alcance
+
+Esta simulación no mide partículas PM2.5 reales: Wokwi usa el potenciómetro como entrada de prueba. Los umbrales son únicamente demostrativos y no representan una recomendación sanitaria. Para medir PM2.5 se requiere un sensor óptico físico y calibración. No incluye conexión con una app móvil.
+
+
+## Referencias
+
+- [Arduino Uno en Wokwi](https://docs.wokwi.com/parts/wokwi-arduino-uno)
+- [Potenciómetro en Wokwi](https://docs.wokwi.com/parts/wokwi-potentiometer)
+- [LCD1602 en Wokwi](https://docs.wokwi.com/parts/wokwi-lcd1602)
+- [Formato de diagramas Wokwi](https://docs.wokwi.com/diagram-format)
