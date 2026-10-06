@@ -4,7 +4,7 @@
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-uno", "id": "uno", "top": 65, "left": 30, "attrs": {} },
-    { "type": "wokwi-potentiometer", "id": "pot", "top": 80, "left": 360, "attrs": { "value": "300" } },
+    { "type": "wokwi-gas-sensor", "id": "mq2", "top": 80, "left": 360, "attrs": { "ppm": "400", "threshold": "4.4" } },
     { "type": "wokwi-lcd1602", "id": "lcd", "top": 260, "left": 330, "attrs": { "pins": "full" } },
     { "type": "wokwi-led", "id": "ledG", "top": 120, "left": 575, "attrs": { "color": "green" } },
     { "type": "wokwi-led", "id": "ledY", "top": 185, "left": 575, "attrs": { "color": "yellow" } },
@@ -14,9 +14,9 @@
     { "type": "wokwi-resistor", "id": "rR", "top": 238, "left": 685, "attrs": { "value": "220" } }
   ],
   "connections": [
-    [ "pot:VCC", "uno:5V", "red", [] ],
-    [ "pot:GND", "uno:GND.1", "black", [] ],
-    [ "pot:SIG", "uno:A0", "green", [] ],
+    [ "mq2:VCC", "uno:5V", "red", [] ],
+    [ "mq2:GND", "uno:GND.1", "black", [] ],
+    [ "mq2:AO", "uno:A0", "green", [] ],
     [ "lcd:VSS", "uno:GND.1", "black", [] ],
     [ "lcd:VDD", "uno:5V", "red", [] ],
     [ "lcd:RS", "uno:12", "blue", [] ],
