@@ -1,6 +1,6 @@
 # VigiAire en Wokwi
 
-**[Abrir la simulación interactiva en Wokwi](https://wokwi.com/projects/477156380361620481)**
+**[Abrir la simulación interactiva en Wokwi](https://wokwi.com/projects/477170557858030593)**
 
 Prototipo virtual inicial del módulo VigiAire. Simula una entrada variable, presenta el valor en una LCD 16×2 y activa un indicador LED según el rango.
 
@@ -12,7 +12,7 @@ Prototipo virtual inicial del módulo VigiAire. Simula una entrada variable, pre
 
 ## Abrir y ejecutar en Wokwi
 
-1. Abre la [simulación interactiva de VigiAire](https://wokwi.com/projects/477156380361620481).
+1. Abre la [simulación interactiva de VigiAire](https://wokwi.com/projects/477170557858030593).
 2. Copia el contenido de `sketch.ino` y reemplaza el del editor.
 3. Reemplaza el contenido de `diagram.json` con el diagrama de esta carpeta.
 4. En Library Manager instala `LiquidCrystal`.
