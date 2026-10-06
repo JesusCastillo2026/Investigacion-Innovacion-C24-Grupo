@@ -24,7 +24,8 @@ El prototipo está diseñado para ser accesible, replicable y estar contenido en
 ## 📂 Estructura del Repositorio
 * `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
 * `/hardware`: Esquemas de conexiones y distribución de los componentes electrónicos.
-* `/software`: Código fuente en C++ (sketch) para procesar las lecturas en el Arduino Uno.
+* `/software`: Recursos y documentación del software del proyecto.
+* `/VigiAireSimulator_Wokwi`: Simulación Arduino Uno para Wokwi, con sketch C++, diagrama del circuito y guías de uso.
 
 ## 🤖 Uso de IA en el proceso
 En la fase de ideación y diseño se utilizaron las siguientes herramientas:
