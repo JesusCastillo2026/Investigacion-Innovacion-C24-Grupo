@@ -24,8 +24,8 @@ El prototipo está diseñado para ser accesible, replicable y estar contenido en
 ## 📂 Estructura del Repositorio
 * `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
 * `/hardware`: Esquemas de conexiones y distribución de los componentes electrónicos.
-* `/software`: Recursos y documentación del software del proyecto.
-* `/VigiAireSimulator_Wokwi`: Simulación Arduino Uno para Wokwi, con sketch C++, diagrama del circuito y guías de uso.
+* `/software/AppVigiAire`: Aplicación Android de VigiAire, desarrollada con Kotlin y Jetpack Compose.
+* `/software/VigiAireSimulator_Wokwi`: Simulación del circuito Arduino Uno en Wokwi, con sketch C++, diagrama y guía de uso.
 
 ## 🤖 Uso de IA en el proceso
 En la fase de ideación y diseño se utilizaron las siguientes herramientas:
