@@ -36,10 +36,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -52,6 +50,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tecsup.vigiaire.data.repository.Repositorio
+import com.tecsup.vigiaire.data.network.MqttConnectionState
+import com.tecsup.vigiaire.data.network.MqttVigiAireClient
 import com.tecsup.vigiaire.navigation.Pantalla
 import com.tecsup.vigiaire.ui.components.CircularAirGauge
 import com.tecsup.vigiaire.ui.components.RecommendationCard
@@ -67,8 +67,6 @@ import com.tecsup.vigiaire.ui.theme.TextoGris
 import com.tecsup.vigiaire.ui.theme.TextoOscuro
 import com.tecsup.vigiaire.ui.theme.VerdeExito
 import com.tecsup.vigiaire.ui.theme.VerdeSuave
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,27 +77,13 @@ fun HomeScreen(
 ) {
     val lecturas by Repositorio.lecturas.collectAsState()
     val usuario by Repositorio.usuarioActual.collectAsState()
-    val conectado by Repositorio.dispositivoConectado.collectAsState()
+    val mqttState by MqttVigiAireClient.state.collectAsState()
+    val conectado = mqttState == MqttConnectionState.CONNECTED
 
     val lecturaActual = lecturas.firstOrNull() ?: Repositorio.obtenerUltimaLectura()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-    // Contador de tiempo transcurrido desde la última lectura
-    var segundosTranscurridos by remember { mutableLongStateOf(0L) }
-
-    // Simulación en tiempo real: Genera lectura cada 5 segundos
-    LaunchedEffect(lecturaActual.timestamp) {
-        segundosTranscurridos = 0L
-        while (isActive) {
-            delay(1000L)
-            segundosTranscurridos++
-            if (segundosTranscurridos % 5 == 0L) {
-                Repositorio.generarNuevaLectura()
-            }
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -197,7 +181,7 @@ fun HomeScreen(
                 color = TextoOscuro
             )
             Text(
-                text = "Aquí está el estado del aire en tu zona",
+                text = "Vista de demostración de VigiAire",
                 fontSize = 14.sp,
                 color = TextoGris
             )
@@ -237,7 +221,7 @@ fun HomeScreen(
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = "Módulo Ventana",
+                                text = "Dato de ejemplo",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = AzulOscuro
@@ -257,7 +241,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Actualizado hace $segundosTranscurridos seg",
+                        text = "Lectura conceptual; señal MQTT en Tu dispositivo",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = TextoGris
@@ -275,7 +259,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Tarjeta "Tu equipo" con LED simulado
+            // El estado viene de la conexión MQTT real con Wokwi.
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -311,7 +295,7 @@ fun HomeScreen(
 
                         Column {
                             Text(
-                                text = "Tu equipo VigiAire",
+                                text = "Simulador Wokwi",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextoOscuro
@@ -326,7 +310,7 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = if (conectado) "VigiAire conectado" else "Desconectado",
+                                    text = if (conectado) "Conectado por MQTT" else "Sin conexión MQTT",
                                     fontSize = 13.sp,
                                     color = if (conectado) VerdeExito else RojoAlerta,
                                     fontWeight = FontWeight.Medium

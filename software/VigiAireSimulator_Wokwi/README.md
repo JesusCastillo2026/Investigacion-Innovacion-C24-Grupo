@@ -1,29 +1,54 @@
-# VigiAire en Wokwi
+# VigiAire: simulador ESP32 + MQTT
 
-**[Abrir la simulación interactiva de VigiAire](https://wokwi.com/projects/477170557858030593)**
+**Proyecto Wokwi:** [Abrir VigiAire ESP32 + MQTT](https://wokwi.com/projects/478264195609475073)
 
-Prototipo virtual inicial del módulo VigiAire. Usa un sensor MQ-2 de Wokwi para variar una señal de gas/humo, muestra su lectura analógica relativa en una LCD 16×2 y activa un indicador LED según el nivel configurado.
+Este prototipo publica por MQTT una lectura simulada del sensor MQ-2 cada dos segundos. La app Android se suscribe al mismo tema y muestra el valor ADC y el estado recibido.
+
+## Componentes simulados
+
+- ESP32 DevKit v1: microcontrolador con Wi-Fi.
+- MQ-2 de Wokwi: señal relativa de gas/humo, no mide PM2.5.
+- Divisor resistivo de 10 kΩ y 20 kΩ para limitar la salida analógica a un nivel seguro para el ESP32.
+- Pantalla LCD 16x2, tres LEDs de estado y resistencias de 220 Ω.
+
+## MQTT para la demostración
+
+- Broker público de prueba: `broker.hivemq.com:1883`.
+- Tema: `vigiaire/c24d/grupo4/9f3c7d8b/telemetry`.
+- QoS 0: se muestran los mensajes que llegan; no se garantiza su almacenamiento.
+- No requiere usuario ni contraseña. El broker y el tema son públicos: no enviar información privada ni usar esta configuración en producción.
+
+Cada mensaje tiene este formato:
+
+```json
+{"device":"VigiAire-ESP32","sensor":"MQ-2","gasAdc":1250,"status":"VENTILE","seq":1,"uptimeMs":2000}
+```
+
+`gasAdc` está en el rango ADC del ESP32 (0–4095). Los estados y umbrales son demostrativos, no son mediciones ambientales ni recomendaciones sanitarias.
 
 ## Archivos
 
-- `sketch.ino`: programa C++ para Arduino Uno.
-- `diagram.json`: conexiones del Arduino Uno, sensor MQ-2, LCD 16×2 y LEDs con resistencias.
-- `libraries.txt`: biblioteca requerida (`LiquidCrystal`).
+- `sketch.ino`: conexión Wi-Fi, lectura, semáforo y publicación MQTT.
+- `diagram.json`: ESP32, sensor, divisor resistivo, LCD y LEDs.
+- `libraries.txt`: bibliotecas usadas por Wokwi.
 
-## Probar la simulación
+## Iniciar el simulador
 
-1. Abre la [simulación en Wokwi](https://wokwi.com/projects/477170557858030593).
-2. Inicia la simulación.
-3. Selecciona el sensor MQ-2 y ajusta el control **GAS (PPM)** para cambiar el escenario.
-4. Observa la lectura analógica relativa, la recomendación en la LCD y el estado de los LEDs. También puedes consultar el Monitor Serial.
+1. Abre el proyecto de Wokwi y pulsa **Start the simulation**.
+2. En el Monitor Serial, espera los mensajes `conectado` y `MQTT publicado`.
+3. Cambia el control de gas del MQ-2 para variar la señal y el estado del LCD/LED.
+4. Deja la simulación activa mientras ejecutas la app Android.
 
-## Alcance de la lectura
+## Ejecutar la app Android
 
-El MQ-2 permite simular la detección de gases combustibles y humo. La lectura mostrada por este prototipo es una señal relativa del sensor; **no mide PM2.5 ni determina la calidad ambiental real**. Los umbrales son ilustrativos y no constituyen una recomendación sanitaria. Para medir PM2.5 se necesita un sensor óptico de partículas y calibración. Esta versión no incluye conexión con una app móvil.
+1. Abre `software/AppVigiAire` en Android Studio y espera la sincronización de Gradle.
+2. Ejecuta la app en un teléfono o emulador con Internet.
+3. Inicia sesión de demostración: `demo@vigiaire.com` / `123456`.
+4. En la barra inferior, abre **Dispositivo** y pulsa **Conectar MQTT**.
+5. La pantalla debe mostrar el indicador de conexión, la lectura `gasAdc` y el estado que publica Wokwi.
 
-## Referencias
+Ambos extremos deben usar el mismo broker y tema, y Wokwi debe seguir ejecutándose. La red del aula debe permitir MQTT por TCP en el puerto 1883; si lo bloquea, probar con otra red.
 
-- [Sensor de gas MQ-2 en Wokwi](https://docs.wokwi.com/parts/wokwi-gas-sensor)
-- [Arduino Uno en Wokwi](https://docs.wokwi.com/parts/wokwi-arduino-uno)
-- [LCD1602 en Wokwi](https://docs.wokwi.com/parts/wokwi-lcd1602)
-- [Formato de diagramas Wokwi](https://docs.wokwi.com/diagram-format)
+## Límites del prototipo
+
+El MQ-2 simulado representa gases combustibles/humo y no mide PM2.5. La pantalla de conexión de la app rotula el dato como señal relativa de MQ-2 para no confundirlo con una concentración real. Este broker público y la conexión sin cifrado son solo para la demostración académica; una implementación real requiere broker privado, autenticación, TLS y un sensor óptico de partículas calibrado.

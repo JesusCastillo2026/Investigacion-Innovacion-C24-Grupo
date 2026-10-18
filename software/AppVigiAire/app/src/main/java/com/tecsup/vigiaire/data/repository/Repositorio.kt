@@ -17,14 +17,6 @@ object Repositorio {
     )
     val usuarioActual: StateFlow<Usuario?> = _usuarioActual.asStateFlow()
 
-    // Estado de conexión del dispositivo físico simulado
-    private val _dispositivoConectado = MutableStateFlow(true)
-    val dispositivoConectado: StateFlow<Boolean> = _dispositivoConectado.asStateFlow()
-
-    // Prueba de LED indicador
-    private val _ledPruebaActivo = MutableStateFlow(false)
-    val ledPruebaActivo: StateFlow<Boolean> = _ledPruebaActivo.asStateFlow()
-
     // Lista de lecturas en tiempo real
     private val _lecturas = MutableStateFlow<List<LecturaAire>>(emptyList())
     val lecturas: StateFlow<List<LecturaAire>> = _lecturas.asStateFlow()
@@ -54,18 +46,6 @@ object Repositorio {
 
     fun cerrarSesion() {
         _usuarioActual.value = null
-    }
-
-    fun alternarConexionDispositivo() {
-        _dispositivoConectado.value = !_dispositivoConectado.value
-    }
-
-    fun activarPruebaLed() {
-        _ledPruebaActivo.value = true
-    }
-
-    fun desactivarPruebaLed() {
-        _ledPruebaActivo.value = false
     }
 
     fun generarNuevaLectura(): LecturaAire {

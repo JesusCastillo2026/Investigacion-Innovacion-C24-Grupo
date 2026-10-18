@@ -25,7 +25,7 @@ El prototipo está diseñado para ser accesible, replicable y estar contenido en
 * `/documentos`: Contiene los avances semanales, diagramas, esquemas e infografías del proyecto.
 * `/hardware`: Esquemas de conexiones y distribución de los componentes electrónicos.
 * `/software/AppVigiAire`: Aplicación Android de VigiAire, desarrollada con Kotlin y Jetpack Compose.
-* `/software/VigiAireSimulator_Wokwi`: Simulación del circuito Arduino Uno en Wokwi, con sketch C++, diagrama y guía de uso.
+* `/software/VigiAireSimulator_Wokwi`: Simulación del circuito con ESP32 y MQTT para enviar lecturas MQ-2 a la app Android. [Abrir simulador Wokwi](https://wokwi.com/projects/478264195609475073).
 
 ## 🤖 Uso de IA en el proceso
 En la fase de ideación y diseño se utilizaron las siguientes herramientas:
