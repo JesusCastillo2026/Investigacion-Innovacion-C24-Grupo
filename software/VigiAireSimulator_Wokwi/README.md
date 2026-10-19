@@ -2,12 +2,12 @@
 
 **Proyecto Wokwi:** [Abrir VigiAire ESP32 + MQTT](https://wokwi.com/projects/478264195609475073)
 
-Este prototipo publica por MQTT una lectura simulada del sensor MQ-2 cada dos segundos. La app Android se suscribe al mismo tema y muestra el valor ADC y el estado recibido.
+Este prototipo publica por MQTT una lectura simulada del sensor de gas de Wokwi (señal tipo MQ-2) aproximadamente cada segundo. La app Android se suscribe al mismo tema y muestra el valor ADC y el estado recibido. La lectura representa gas/humo simulado; no equivale a PM2.5 ni a una medición real de calidad del aire.
 
 ## Componentes simulados
 
 - ESP32 DevKit v1: microcontrolador con Wi-Fi.
-- MQ-2 de Wokwi: señal relativa de gas/humo, no mide PM2.5.
+- Gas Sensor de Wokwi (usado como señal tipo MQ-2 en el programa): señal relativa de gas/humo, no mide PM2.5.
 - Pantalla LCD 16x2, tres LEDs de estado y resistencias de 220 Ω.
 
 ## Mapeo del circuito
@@ -33,7 +33,7 @@ En Wokwi AO está conectado directamente para facilitar la simulación. Para un 
 Cada mensaje tiene este formato:
 
 ```json
-{"device":"VigiAire-ESP32","sensor":"MQ-2","gasAdc":1250,"status":"VENTILE","seq":1,"uptimeMs":2000}
+{"device":"VigiAire-ESP32","sensor":"MQ-2","gasAdc":1250,"status":"VENTILE","seq":1,"uptimeMs":1000}
 ```
 
 `gasAdc` está en el rango ADC del ESP32 (0–4095). Los estados y umbrales son demostrativos, no son mediciones ambientales ni recomendaciones sanitarias.
