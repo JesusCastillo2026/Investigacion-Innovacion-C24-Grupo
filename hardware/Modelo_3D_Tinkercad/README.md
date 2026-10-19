@@ -2,7 +2,7 @@
 
 El diseño de la carcasa y el ensamble conceptual se trabajaron en Tinkercad. El modelo en línea se puede consultar y editar desde aquí:
 
-- [Abrir modelo VigiAire en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit)
+- [Abrir modelo VigiAire en Tinkercad]([https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit?sharecode=kPaqYq77BRIRYFCdsBkRbAXHNW39ilBV4M7bEdHDeqQ))
 
 También se incluyen en esta carpeta archivos STL de referencia del modelado de la semana 7:
 
