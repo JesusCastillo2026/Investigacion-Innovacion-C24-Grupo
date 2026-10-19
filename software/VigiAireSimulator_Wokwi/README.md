@@ -8,8 +8,20 @@ Este prototipo publica por MQTT una lectura simulada del sensor MQ-2 cada dos se
 
 - ESP32 DevKit v1: microcontrolador con Wi-Fi.
 - MQ-2 de Wokwi: señal relativa de gas/humo, no mide PM2.5.
-- Divisor resistivo de 10 kΩ y 20 kΩ para limitar la salida analógica a un nivel seguro para el ESP32.
 - Pantalla LCD 16x2, tres LEDs de estado y resistencias de 220 Ω.
+
+## Mapeo del circuito
+
+| MQ-2 de Wokwi | ESP32 | Uso |
+| --- | --- | --- |
+| VCC | VIN | Alimentación del sensor en la simulación |
+| GND | GND | Tierra común |
+| AO | GPIO34 | Lectura analógica; se promedian 20 muestras para reducir variaciones |
+| DO | GPIO32 | Alarma digital activa en LOW; GPIO32 permite `INPUT_PULLUP` |
+
+La lectura se compara con el umbral demostrativo `GOOD_MAX = 2100`: hasta ese valor se muestra `VENTILE`; por encima, `ESPERE`; cuando DO se activa, se muestra `ALERTA`. El umbral es solo para probar la lógica y no equivale a una concentración de PM2.5.
+
+En Wokwi AO está conectado directamente para facilitar la simulación. Para un ESP32 físico, no conectar directamente la salida de 5 V del módulo MQ-2 a GPIO34: usar un divisor de tensión o un adaptador de nivel compatible con 3.3 V.
 
 ## MQTT para la demostración
 
@@ -29,7 +41,7 @@ Cada mensaje tiene este formato:
 ## Archivos
 
 - `sketch.ino`: conexión Wi-Fi, lectura, semáforo y publicación MQTT.
-- `diagram.json`: ESP32, sensor, divisor resistivo, LCD y LEDs.
+- `diagram.json`: ESP32, MQ-2, LCD y LEDs con su mapeo de pines.
 - `libraries.txt`: bibliotecas usadas por Wokwi.
 
 ## Iniciar el simulador

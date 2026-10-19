@@ -11,17 +11,13 @@
     { "type": "wokwi-led", "id": "ledR", "top": 260, "left": 600, "attrs": { "color": "red" } },
     { "type": "wokwi-resistor", "id": "rG", "top": 118, "left": 700, "attrs": { "value": "220" } },
     { "type": "wokwi-resistor", "id": "rY", "top": 183, "left": 700, "attrs": { "value": "220" } },
-    { "type": "wokwi-resistor", "id": "rR", "top": 248, "left": 700, "attrs": { "value": "220" } },
-    { "type": "wokwi-resistor", "id": "rTop", "top": 95, "left": 270, "attrs": { "value": "10k" } },
-    { "type": "wokwi-resistor", "id": "rBottom", "top": 170, "left": 270, "attrs": { "value": "20k" } }
+    { "type": "wokwi-resistor", "id": "rR", "top": 248, "left": 700, "attrs": { "value": "220" } }
   ],
   "connections": [
     [ "mq2:VCC", "esp32:VIN", "red", [] ],
     [ "mq2:GND", "esp32:GND.1", "black", [] ],
-    [ "mq2:AO", "rTop:1", "green", [] ],
-    [ "rTop:2", "esp32:34", "green", [] ],
-    [ "esp32:34", "rBottom:1", "green", [] ],
-    [ "rBottom:2", "esp32:GND.1", "black", [] ],
+    [ "mq2:AO", "esp32:34", "green", [] ],
+    [ "mq2:DO", "esp32:32", "blue", [] ],
     [ "lcd:VSS", "esp32:GND.1", "black", [] ],
     [ "lcd:VDD", "esp32:VIN", "red", [] ],
     [ "lcd:RS", "esp32:23", "blue", [] ],

@@ -6,11 +6,14 @@
 // VigiAire MQTT demo: the Wokwi MQ-2 reports a relative gas/smoke signal,
 // not PM2.5. This project is a connectivity prototype, not an air monitor.
 constexpr int GAS_INPUT = 34;  // ADC1 input; usable while Wi-Fi is active.
+constexpr int GAS_DIGITAL = 32;  // Supports INPUT_PULLUP; GPIO35 does not.
 constexpr int LED_GREEN = 25;
 constexpr int LED_AMBER = 26;
 constexpr int LED_RED = 27;
-constexpr int GOOD_MAX = 1300;
-constexpr int CAUTION_MAX = 2700;
+// Wokwi MQ-2 demo calibration: average the noisy analog signal and use DOUT
+// for a separate high-gas alarm. These are simulation thresholds, not PM2.5.
+constexpr int GOOD_MAX = 2100;
+constexpr int ADC_SAMPLES = 20;
 constexpr unsigned long PUBLISH_INTERVAL_MS = 2000;
 
 // LCD pins: RS, E, D4, D5, D6, D7.
@@ -28,10 +31,19 @@ PubSubClient mqtt(networkClient);
 unsigned long lastPublish = 0;
 unsigned long sequenceNumber = 0;
 
-const char* stateFor(int gasSignal) {
+const char* stateFor(int gasSignal, bool highGasAlarm) {
+  if (highGasAlarm) return "ALERTA";
   if (gasSignal <= GOOD_MAX) return "VENTILE";
-  if (gasSignal <= CAUTION_MAX) return "ESPERE";
-  return "ALERTA";
+  return "ESPERE";
+}
+
+int readGasSignalAverage() {
+  uint32_t total = 0;
+  for (int i = 0; i < ADC_SAMPLES; ++i) {
+    total += analogRead(GAS_INPUT);
+    delay(5);
+  }
+  return total / ADC_SAMPLES;
 }
 
 void showState(int gasSignal, const char* state) {
@@ -92,6 +104,7 @@ void setup() {
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_AMBER, OUTPUT);
   pinMode(LED_RED, OUTPUT);
+  pinMode(GAS_DIGITAL, INPUT_PULLUP);
   analogReadResolution(12);
 
   lcd.begin(16, 2);
@@ -112,8 +125,9 @@ void loop() {
   if (!mqtt.connected()) reconnectMqtt();
   mqtt.loop();
 
-  const int gasSignal = analogRead(GAS_INPUT);
-  const char* state = stateFor(gasSignal);
+  const int gasSignal = readGasSignalAverage();
+  const bool highGasAlarm = digitalRead(GAS_DIGITAL) == LOW;
+  const char* state = stateFor(gasSignal, highGasAlarm);
   showState(gasSignal, state);
 
   if (mqtt.connected() && millis() - lastPublish >= PUBLISH_INTERVAL_MS) {
