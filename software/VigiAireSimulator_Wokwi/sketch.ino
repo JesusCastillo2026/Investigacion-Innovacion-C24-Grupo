@@ -54,14 +54,14 @@ void showState(int gasSignal, const char* state) {
   digitalWrite(LED_AMBER, caution ? HIGH : LOW);
   digitalWrite(LED_RED, (!good && !caution) ? HIGH : LOW);
 
+  char firstLine[17];
+  char secondLine[17];
+  snprintf(firstLine, sizeof(firstLine), "MQ-2: %4d ADC  ", gasSignal);
+  snprintf(secondLine, sizeof(secondLine), "ESTADO: %-7s ", state);
   lcd.setCursor(0, 0);
-  lcd.print("MQ2 ADC:");
-  lcd.print(gasSignal);
-  lcd.print("    ");
+  lcd.print(firstLine);
   lcd.setCursor(0, 1);
-  lcd.print("GAS: ");
-  lcd.print(state);
-  lcd.print("       ");
+  lcd.print(secondLine);
 }
 
 void connectWiFi() {
@@ -95,8 +95,7 @@ void publishReading(int gasSignal, const char* state) {
            gasSignal, state, ++sequenceNumber, millis());
 
   const bool sent = mqtt.publish(MQTT_TOPIC, payload, false);
-  Serial.print(sent ? "MQTT publicado: " : "MQTT no enviado: ");
-  Serial.println(payload);
+  Serial.println(sent ? "MQTT publicado correctamente." : "No se pudo publicar en MQTT.");
 }
 
 void setup() {
@@ -109,10 +108,7 @@ void setup() {
 
   lcd.begin(16, 2);
   lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("VigiAire ESP32");
-  lcd.setCursor(0, 1);
-  lcd.print("MQ2 + MQTT");
+  showState(0, "INICIANDO");
 
   WiFi.mode(WIFI_STA);
   connectWiFi();
@@ -130,9 +126,14 @@ void loop() {
   const char* state = stateFor(gasSignal, highGasAlarm);
   showState(gasSignal, state);
 
-  if (mqtt.connected() && millis() - lastPublish >= PUBLISH_INTERVAL_MS) {
+  if (millis() - lastPublish >= PUBLISH_INTERVAL_MS) {
     lastPublish = millis();
-    publishReading(gasSignal, state);
+    Serial.printf("Lectura MQ-2: %d ADC | Estado: %s\n", gasSignal, state);
+    if (mqtt.connected()) {
+      publishReading(gasSignal, state);
+    } else {
+      Serial.println("Lectura local disponible; esperando conexión MQTT.");
+    }
   }
 
   delay(100);

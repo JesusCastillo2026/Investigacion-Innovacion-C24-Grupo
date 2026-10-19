@@ -16,8 +16,8 @@
   "connections": [
     [ "mq2:VCC", "esp32:VIN", "red", [] ],
     [ "mq2:GND", "esp32:GND.1", "black", [] ],
-    [ "mq2:AO", "esp32:34", "green", [] ],
-    [ "mq2:DO", "esp32:32", "blue", [] ],
+    [ "mq2:AOUT", "esp32:34", "green", [] ],
+    [ "mq2:DOUT", "esp32:32", "blue", [] ],
     [ "lcd:VSS", "esp32:GND.1", "black", [] ],
     [ "lcd:VDD", "esp32:VIN", "red", [] ],
     [ "lcd:RS", "esp32:23", "blue", [] ],
@@ -31,13 +31,13 @@
     [ "lcd:K", "esp32:GND.1", "black", [] ],
     [ "ledG:A", "rG:1", "green", [] ],
     [ "rG:2", "esp32:25", "green", [] ],
-    [ "ledG:K", "esp32:GND.1", "black", [] ],
+    [ "ledG:C", "esp32:GND.1", "black", [] ],
     [ "ledY:A", "rY:1", "yellow", [] ],
     [ "rY:2", "esp32:26", "yellow", [] ],
-    [ "ledY:K", "esp32:GND.1", "black", [] ],
+    [ "ledY:C", "esp32:GND.1", "black", [] ],
     [ "ledR:A", "rR:1", "red", [] ],
     [ "rR:2", "esp32:27", "red", [] ],
-    [ "ledR:K", "esp32:GND.1", "black", [] ]
+    [ "ledR:C", "esp32:GND.1", "black", [] ]
   ],
   "dependencies": {}
 }
