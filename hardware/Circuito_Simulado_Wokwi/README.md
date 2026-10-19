@@ -33,7 +33,6 @@ El umbral `GOOD_MAX = 2100` y los estados son parámetros de demostración. El v
 - `sketch.ino`: lectura, actualización de LCD y LEDs, monitor serial y envío MQTT.
 - `diagram.json`: componentes y conexiones del circuito.
 - `libraries.txt`: bibliotecas necesarias en Wokwi.
-- [PRUEBAS_ELECTRONICAS.md](./PRUEBAS_ELECTRONICAS.md): matriz para registrar pruebas, evidencias y el enlace del video.
 
 ## Ejecución
 
