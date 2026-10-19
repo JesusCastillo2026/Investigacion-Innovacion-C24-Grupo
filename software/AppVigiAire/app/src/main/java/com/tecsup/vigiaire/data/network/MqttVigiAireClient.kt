@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.data.network
 
+import com.tecsup.vigiaire.data.model.EstadoSensor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,10 +14,12 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.json.JSONObject
 import java.util.UUID
 
-/** Cliente MQTT de demostración: recibe la señal relativa que publica Wokwi. */
+/** Cliente MQTT y sesión de lecturas en vivo de Wokwi. */
 object MqttVigiAireClient {
     const val BROKER = "tcp://broker.hivemq.com:1883"
     const val TOPIC = "vigiaire/c24d/grupo4/9f3c7d8b/telemetry"
+    const val LIVE_TIMEOUT_MS = 10_000L
+    const val MAX_SESSION_READINGS = 2_000
 
     private val _state = MutableStateFlow(MqttConnectionState.DISCONNECTED)
     val state: StateFlow<MqttConnectionState> = _state.asStateFlow()
@@ -24,11 +27,35 @@ object MqttVigiAireClient {
     private val _latestReading = MutableStateFlow<MqttGasReading?>(null)
     val latestReading: StateFlow<MqttGasReading?> = _latestReading.asStateFlow()
 
+    private val _sessionReadings = MutableStateFlow<List<MqttGasReading>>(emptyList())
+    val sessionReadings: StateFlow<List<MqttGasReading>> = _sessionReadings.asStateFlow()
+
+    private val _sessionNumber = MutableStateFlow(1)
+    val sessionNumber: StateFlow<Int> = _sessionNumber.asStateFlow()
+
+    private val _sessionStartedAt = MutableStateFlow<Long?>(null)
+    val sessionStartedAt: StateFlow<Long?> = _sessionStartedAt.asStateFlow()
+
+    private val _sessionReadingCount = MutableStateFlow(0L)
+    val sessionReadingCount: StateFlow<Long> = _sessionReadingCount.asStateFlow()
+
+    private val _sessionMinimum = MutableStateFlow<MqttGasReading?>(null)
+    val sessionMinimum: StateFlow<MqttGasReading?> = _sessionMinimum.asStateFlow()
+
+    private val _sessionMaximum = MutableStateFlow<MqttGasReading?>(null)
+    val sessionMaximum: StateFlow<MqttGasReading?> = _sessionMaximum.asStateFlow()
+
+    private val _sessionAverage = MutableStateFlow<Int?>(null)
+    val sessionAverage: StateFlow<Int?> = _sessionAverage.asStateFlow()
+    private var sessionSignalSum = 0L
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
     @Volatile
     private var client: MqttAsyncClient? = null
+    private var lastUptimeMs: Long? = null
+    private var lastSequence: Long? = null
 
     @Synchronized
     fun connect() {
@@ -59,14 +86,19 @@ object MqttVigiAireClient {
                     if (topic != TOPIC || message == null) return
                     runCatching {
                         val json = JSONObject(String(message.payload, Charsets.UTF_8))
+                        require(json.optString("device") == "VigiAire-ESP32")
+                        require(json.optString("sensor") == "MQ-2")
+                        val rawStatus = json.getString("status").uppercase()
+                        require(EstadoSensor.from(rawStatus) != EstadoSensor.DESCONOCIDO)
                         MqttGasReading(
                             gasAdc = json.getInt("gasAdc").coerceIn(0, 4095),
-                            status = json.getString("status"),
-                            sequence = json.optLong("seq"),
+                            status = rawStatus,
+                            sequence = json.optLong("seq", 0L),
+                            uptimeMs = json.optLong("uptimeMs", 0L).coerceAtLeast(0L),
                             receivedAt = System.currentTimeMillis()
                         )
-                    }.onSuccess { _latestReading.value = it }
-                        .onFailure { _error.value = "Llegó un mensaje con formato inesperado." }
+                    }.onSuccess(::recordReading)
+                        .onFailure { _error.value = "Se ignoró un mensaje ajeno o con formato inesperado." }
                 }
 
                 override fun deliveryComplete(token: IMqttDeliveryToken?) = Unit
@@ -112,6 +144,35 @@ object MqttVigiAireClient {
         }
     }
 
+    private fun recordReading(reading: MqttGasReading) {
+        val rebooted = lastUptimeMs != null &&
+            (reading.uptimeMs < lastUptimeMs!! || reading.sequence < (lastSequence ?: 0L))
+
+        if (rebooted) {
+            _sessionNumber.value += 1
+            _sessionReadings.value = emptyList()
+            _sessionStartedAt.value = reading.receivedAt
+            _sessionReadingCount.value = 0L
+            _sessionMinimum.value = null
+            _sessionMaximum.value = null
+            _sessionAverage.value = null
+            sessionSignalSum = 0L
+        } else if (_sessionStartedAt.value == null) {
+            _sessionStartedAt.value = reading.receivedAt
+        }
+
+        lastUptimeMs = reading.uptimeMs
+        lastSequence = reading.sequence
+        _latestReading.value = reading
+        _sessionReadings.value = (_sessionReadings.value + reading).takeLast(MAX_SESSION_READINGS)
+        _sessionReadingCount.value += 1
+        if (_sessionMinimum.value == null || reading.gasAdc < _sessionMinimum.value!!.gasAdc) _sessionMinimum.value = reading
+        if (_sessionMaximum.value == null || reading.gasAdc > _sessionMaximum.value!!.gasAdc) _sessionMaximum.value = reading
+        sessionSignalSum += reading.gasAdc
+        _sessionAverage.value = (sessionSignalSum / _sessionReadingCount.value).toInt()
+        _error.value = null
+    }
+
     private fun subscribe(mqttClient: MqttAsyncClient) {
         if (!mqttClient.isConnected) return
         mqttClient.subscribe(TOPIC, 0, null, object : IMqttActionListener {
@@ -140,5 +201,8 @@ data class MqttGasReading(
     val gasAdc: Int,
     val status: String,
     val sequence: Long,
+    val uptimeMs: Long,
     val receivedAt: Long
-)
+) {
+    val estado: EstadoSensor get() = EstadoSensor.from(status)
+}

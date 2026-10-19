@@ -8,5 +8,6 @@ sealed class Pantalla(val ruta: String) {
     object Recomendacion : Pantalla("recomendacion")
     object Tendencia : Pantalla("tendencia")
     object Dispositivo : Pantalla("dispositivo")
+    object Noticias : Pantalla("noticias")
     object Perfil : Pantalla("perfil")
 }

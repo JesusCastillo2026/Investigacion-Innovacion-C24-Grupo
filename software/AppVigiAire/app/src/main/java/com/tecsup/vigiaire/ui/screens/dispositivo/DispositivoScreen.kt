@@ -67,6 +67,7 @@ fun DispositivoScreen(
     val reading by MqttVigiAireClient.latestReading.collectAsState()
     val error by MqttVigiAireClient.error.collectAsState()
     val connected = connectionState == MqttConnectionState.CONNECTED
+    val readingIsFresh = reading != null && connected && System.currentTimeMillis() - reading!!.receivedAt <= MqttVigiAireClient.LIVE_TIMEOUT_MS
 
     val stateColor = when (connectionState) {
         MqttConnectionState.CONNECTED -> VerdeExito
@@ -88,7 +89,7 @@ fun DispositivoScreen(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("VigiAire simulado", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Text("Datos en vivo desde Wokwi", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                    Text("Señal MQTT del circuito Wokwi", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
@@ -170,10 +171,11 @@ fun DispositivoScreen(
                         )
                     } else {
                         val value = reading!!
+                        Text(if (readingIsFresh) "Lectura en vivo" else "Último dato recibido", fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.Bold, color = if (readingIsFresh) VerdeExito else TextoGris)
                         Text("${value.gasAdc}", fontSize = VigiAireTypeScale.Metric, fontWeight = FontWeight.Bold, color = TextoOscuro)
                         Text("señal relativa MQ-2 · ADC 0–4095", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                         Text("Estado del circuito: ${value.status}", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = AzulOscuro)
-                        Text("Mensaje #${value.sequence} · ${formatTime(value.receivedAt)}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        Text("Mensaje #${value.sequence} · recibido ${formatTime(value.receivedAt)}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 }
             }

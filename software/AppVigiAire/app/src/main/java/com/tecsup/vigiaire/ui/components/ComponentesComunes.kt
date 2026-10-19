@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,8 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tecsup.vigiaire.data.model.DatoHistoricoBarra
-import com.tecsup.vigiaire.data.model.EstadoCalidad
+import com.tecsup.vigiaire.data.model.EstadoSensor
+import com.tecsup.vigiaire.data.network.MqttGasReading
 import com.tecsup.vigiaire.navigation.Pantalla
 import com.tecsup.vigiaire.ui.theme.AmarilloAlerta
 import com.tecsup.vigiaire.ui.theme.AzulClaro
@@ -104,13 +105,13 @@ fun VigiAireLogo(
  * Semáforo Circular Grande (180.dp) con anillo de progreso animado
  */
 @Composable
-fun CircularAirGauge(
-    pm25: Double,
-    estado: EstadoCalidad,
+fun SignalGauge(
+    reading: MqttGasReading?,
     modifier: Modifier = Modifier,
     size: Dp = 180.dp
 ) {
-    val targetProgress = (pm25 / 150.0).toFloat().coerceIn(0.05f, 1.0f)
+    val targetProgress = ((reading?.gasAdc ?: 0) / 4095f).coerceIn(0f, 1f)
+    val estado = reading?.estado ?: EstadoSensor.DESCONOCIDO
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
         animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
@@ -148,13 +149,13 @@ fun CircularAirGauge(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = pm25.toInt().toString(),
+                text = reading?.gasAdc?.toString() ?: "--",
                 fontSize = VigiAireTypeScale.Metric,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro
             )
             Text(
-                text = "µg/m³ PM2.5",
+                text = "ADC · MQ-2",
                 fontSize = VigiAireTypeScale.Label,
                 color = TextoGris,
                 fontWeight = FontWeight.Medium
@@ -171,7 +172,7 @@ fun CircularAirGauge(
                     .padding(horizontal = 14.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = estado.titulo,
+                    text = if (reading == null) "SIN SEÑAL" else estado.titulo,
                     color = estado.color,
                     fontWeight = FontWeight.Bold,
                     fontSize = VigiAireTypeScale.Label
@@ -186,7 +187,7 @@ fun CircularAirGauge(
  */
 @Composable
 fun TrafficLightWidget(
-    estadoActivo: EstadoCalidad,
+    estadoActivo: EstadoSensor?,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -206,22 +207,22 @@ fun TrafficLightWidget(
             // Luz Roja
             TrafficLightCircle(
                 color = RojoAlerta,
-                isActivo = estadoActivo == EstadoCalidad.MALA,
-                label = "MALA"
+                isActivo = estadoActivo == EstadoSensor.ALERTA,
+                label = "ALERTA"
             )
 
             // Luz Amarilla
             TrafficLightCircle(
                 color = AmarilloAlerta,
-                isActivo = estadoActivo == EstadoCalidad.MODERADA,
-                label = "MODERADA"
+                isActivo = estadoActivo == EstadoSensor.ESPERE,
+                label = "ESPERE"
             )
 
             // Luz Verde
             TrafficLightCircle(
                 color = VerdeExito,
-                isActivo = estadoActivo == EstadoCalidad.BUENA,
-                label = "BUENA"
+                isActivo = estadoActivo == EstadoSensor.VENTILE,
+                label = "VENTILE"
             )
         }
     }
@@ -340,29 +341,29 @@ fun MetricCard(
  */
 @Composable
 fun RecommendationCard(
-    estado: EstadoCalidad,
-    textoPersonalizado: String? = null,
+    estado: EstadoSensor?,
     modifier: Modifier = Modifier
 ) {
-    val icon = when (estado) {
-        EstadoCalidad.BUENA -> Icons.Default.CheckCircle
-        EstadoCalidad.MODERADA -> Icons.Default.Info
-        EstadoCalidad.MALA -> Icons.Default.Warning
+    val estadoActual = estado ?: EstadoSensor.DESCONOCIDO
+    val icon = when (estadoActual) {
+        EstadoSensor.VENTILE -> Icons.Default.CheckCircle
+        EstadoSensor.ESPERE -> Icons.Default.Info
+        EstadoSensor.ALERTA -> Icons.Default.Warning
+        EstadoSensor.DESCONOCIDO -> Icons.Default.Info
     }
-
-    val mensaje = textoPersonalizado ?: estado.recomendacionHome
+    val mensaje = estadoActual.recomendacion
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .shadow(4.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = estado.colorFondo)
+        colors = CardDefaults.cardColors(containerColor = estadoActual.colorFondo)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, estado.color.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                .border(1.dp, estadoActual.color.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -370,13 +371,13 @@ fun RecommendationCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(estado.color.copy(alpha = 0.2f)),
+                    .background(estadoActual.color.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = "Recomendación",
-                    tint = estado.color,
+                    tint = estadoActual.color,
                     modifier = Modifier.size(26.dp)
                 )
             }
@@ -387,10 +388,10 @@ fun RecommendationCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Recomendación de Ventilación",
+                    text = "Consejo del circuito",
                     fontSize = VigiAireTypeScale.Label,
                     fontWeight = FontWeight.Bold,
-                    color = estado.color
+                    color = estadoActual.color
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -409,10 +410,10 @@ fun RecommendationCard(
  */
 @Composable
 fun BarChartWidget(
-    datos: List<DatoHistoricoBarra>,
+    datos: List<MqttGasReading>,
     modifier: Modifier = Modifier
 ) {
-    val maxPm25 = (datos.maxOfOrNull { it.pm25 } ?: 100.0).coerceAtLeast(60.0)
+    val maxAdc = (datos.maxOfOrNull { it.gasAdc } ?: 4095).coerceAtLeast(1)
 
     Card(
         modifier = modifier
@@ -431,8 +432,13 @@ fun BarChartWidget(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
             ) {
+                if (datos.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Esperando lecturas MQTT de Wokwi…", color = TextoGris, fontSize = VigiAireTypeScale.Body)
+                    }
+                }
                 datos.forEach { punto ->
-                    val barHeightFraction = (punto.pm25 / maxPm25).toFloat().coerceIn(0.1f, 1.0f)
+                    val barHeightFraction = (punto.gasAdc.toFloat() / maxAdc).coerceIn(0.02f, 1.0f)
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -458,7 +464,8 @@ fun BarChartWidget(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = punto.horaLabel.take(3),
+                            text = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
+                                .format(java.util.Date(punto.receivedAt)).takeLast(5),
                             fontSize = VigiAireTypeScale.Caption,
                             color = TextoGris,
                             maxLines = 1,

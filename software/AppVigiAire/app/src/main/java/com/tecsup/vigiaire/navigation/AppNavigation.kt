@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,11 +17,15 @@ import com.tecsup.vigiaire.ui.screens.perfil.PerfilScreen
 import com.tecsup.vigiaire.ui.screens.recomendacion.RecomendacionScreen
 import com.tecsup.vigiaire.ui.screens.splash.SplashScreen
 import com.tecsup.vigiaire.ui.screens.tendencia.TendenciaScreen
+import com.tecsup.vigiaire.ui.screens.noticias.NoticiasScreen
+import com.tecsup.vigiaire.data.network.MqttVigiAireClient
 
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
+    LaunchedEffect(Unit) { MqttVigiAireClient.connect() }
+
     NavHost(
         navController = navController,
         startDestination = Pantalla.Splash.ruta,
@@ -113,6 +118,20 @@ fun AppNavigation(
                     navController.navigate(ruta) {
                         popUpTo(Pantalla.Home.ruta)
                         launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Pantalla.Noticias.ruta) {
+            NoticiasScreen(
+                currentRoute = Pantalla.Noticias.ruta,
+                onNavigate = { ruta ->
+                    if (ruta != Pantalla.Noticias.ruta) {
+                        navController.navigate(ruta) {
+                            popUpTo(Pantalla.Home.ruta)
+                            launchSingleTop = true
+                        }
                     }
                 }
             )

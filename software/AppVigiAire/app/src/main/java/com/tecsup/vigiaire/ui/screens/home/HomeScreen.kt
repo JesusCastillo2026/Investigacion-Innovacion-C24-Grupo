@@ -19,30 +19,30 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Router
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,91 +52,69 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.tecsup.vigiaire.R
-import com.tecsup.vigiaire.data.model.DatoHistoricoBarra
-import com.tecsup.vigiaire.data.model.LecturaAire
 import com.tecsup.vigiaire.data.network.MqttConnectionState
-import com.tecsup.vigiaire.data.network.MqttGasReading
 import com.tecsup.vigiaire.data.network.MqttVigiAireClient
 import com.tecsup.vigiaire.data.repository.Repositorio
 import com.tecsup.vigiaire.navigation.Pantalla
-import com.tecsup.vigiaire.ui.components.CircularAirGauge
 import com.tecsup.vigiaire.ui.components.RecommendationCard
+import com.tecsup.vigiaire.ui.components.SignalGauge
 import com.tecsup.vigiaire.ui.components.VigiAireBottomBar
-import com.tecsup.vigiaire.ui.theme.AmarilloSuave
 import com.tecsup.vigiaire.ui.theme.AzulClaro
 import com.tecsup.vigiaire.ui.theme.AzulOscuro
 import com.tecsup.vigiaire.ui.theme.AzulPrimario
 import com.tecsup.vigiaire.ui.theme.Blanco
 import com.tecsup.vigiaire.ui.theme.FondoGris
-import com.tecsup.vigiaire.ui.theme.RojoAlerta
-import com.tecsup.vigiaire.ui.theme.RojoSuave
 import com.tecsup.vigiaire.ui.theme.TextoGris
 import com.tecsup.vigiaire.ui.theme.TextoOscuro
-import com.tecsup.vigiaire.ui.theme.VerdeExito
-import com.tecsup.vigiaire.ui.theme.VerdeSuave
 import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    currentRoute: String,
-    onNavigate: (String) -> Unit
-) {
-    val lecturas by Repositorio.lecturas.collectAsState()
-    val historico by Repositorio.historico12Horas.collectAsState()
-    val usuario by Repositorio.usuarioActual.collectAsState()
-    val mqttState by MqttVigiAireClient.state.collectAsState()
-    val latestMqttReading by MqttVigiAireClient.latestReading.collectAsState()
-    val conectado = mqttState == MqttConnectionState.CONNECTED
-    val lecturaActual = lecturas.firstOrNull() ?: Repositorio.obtenerUltimaLectura()
-    val muestra14h = historico.firstOrNull { it.horaLabel.startsWith("14h") }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
+    val user by Repositorio.usuarioActual.collectAsState()
+    val connection by MqttVigiAireClient.state.collectAsState()
+    val latest by MqttVigiAireClient.latestReading.collectAsState()
+    val sessionNumber by MqttVigiAireClient.sessionNumber.collectAsState()
+    val startedAt by MqttVigiAireClient.sessionStartedAt.collectAsState()
+    val readingCount by MqttVigiAireClient.sessionReadingCount.collectAsState()
+    val minimumReading by MqttVigiAireClient.sessionMinimum.collectAsState()
+    val maximumReading by MqttVigiAireClient.sessionMaximum.collectAsState()
+    var menuOpen by remember { mutableStateOf(false) }
+
+    val liveReading = latest?.takeIf {
+        connection == MqttConnectionState.CONNECTED &&
+            System.currentTimeMillis() - it.receivedAt <= MqttVigiAireClient.LIVE_TIMEOUT_MS
+    }
+    val fecha = remember { SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "PE")).format(Date()) }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "VIGIAIRE",
-                        fontSize = VigiAireTypeScale.Section,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoOscuro,
-                        letterSpacing = 1.5.sp
-                    )
-                },
+                title = { Text("VIGIAIRE", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        coroutineScope.launch { snackbarHostState.showSnackbar("Menú VigiAire • TECSUP") }
-                    }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menú", tint = TextoOscuro)
+                    Box {
+                        IconButton(onClick = { menuOpen = true }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = TextoOscuro)
+                        }
+                        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                            DropdownMenuItem(text = { Text("Noticias") }, onClick = { menuOpen = false; onNavigate(Pantalla.Noticias.ruta) })
+                            DropdownMenuItem(text = { Text("Tendencia en vivo") }, onClick = { menuOpen = false; onNavigate(Pantalla.Tendencia.ruta) })
+                            DropdownMenuItem(text = { Text("Consejo del circuito") }, onClick = { menuOpen = false; onNavigate(Pantalla.Recomendacion.ruta) })
+                            DropdownMenuItem(text = { Text("Conexión del equipo") }, onClick = { menuOpen = false; onNavigate(Pantalla.Dispositivo.ruta) })
+                        }
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("Monitoreo ${if (conectado) "activo" else "en modo demostración"}.")
-                        }
-                    }) {
-                        BadgedBox(badge = { Badge(containerColor = AzulPrimario) { Text("2", color = Blanco) } }) {
-                            Icon(Icons.Default.Notifications, contentDescription = "Notificaciones", tint = TextoOscuro)
+                    BadgedBox(badge = { if (connection == MqttConnectionState.CONNECTED) Badge(containerColor = Color(0xFF138A55)) {} }) {
+                        IconButton(onClick = { onNavigate(Pantalla.Noticias.ruta) }) {
+                            Icon(Icons.Default.Notifications, contentDescription = "Noticias", tint = TextoOscuro)
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(AzulClaro)
-                            .clickable { onNavigate(Pantalla.Perfil.ruta) },
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(Modifier.padding(end = 12.dp).size(36.dp).clip(CircleShape).background(AzulClaro), contentAlignment = Alignment.Center) {
                         Icon(Icons.Default.Person, contentDescription = "Perfil", tint = AzulPrimario)
                     }
                 },
@@ -144,183 +122,121 @@ fun HomeScreen(
                 modifier = Modifier.shadow(2.dp)
             )
         },
-        bottomBar = { VigiAireBottomBar(currentRoute = currentRoute, onNavigate = onNavigate) },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },
         containerColor = FondoGris
-    ) { paddingValues ->
+    ) { insets ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+            Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState())
                 .padding(horizontal = 18.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "Hola, ${usuario?.nombre ?: "Jeremy"}",
-                    fontSize = VigiAireTypeScale.Heading,
-                    fontWeight = FontWeight.Bold,
-                    color = TextoOscuro
-                )
-                Text(
-                    text = "Revisa el aire antes de abrir la ventana.",
-                    fontSize = VigiAireTypeScale.Body,
-                    color = TextoGris
-                )
+                Text("Hola, ${user?.nombre ?: "Jeremy"}", fontSize = VigiAireTypeScale.Heading, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                Text("Lecturas que llegan en vivo desde Wokwi.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
             }
 
             Image(
                 painter = painterResource(R.drawable.vigiaire_home_hero),
-                contentDescription = "Sensor VigiAire junto a una ventana con vista a la ciudad",
+                contentDescription = "Módulo VigiAire junto a una ventana",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(168.dp)
-                    .clip(RoundedCornerShape(22.dp))
+                modifier = Modifier.fillMaxWidth().height(168.dp).clip(RoundedCornerShape(22.dp))
             )
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Blanco)
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Lectura de muestra", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        EstadoPill("Simulada", AzulClaro, AzulOscuro)
+            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+                Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Señal en vivo", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                        EstadoPill(if (liveReading != null) "EN VIVO" else "SIN SEÑAL", if (liveReading != null) Color(0xFFE4F5EC) else Color(0xFFFFE8E8), if (liveReading != null) Color(0xFF138A55) else Color(0xFFCE3434))
                     }
-                    Spacer(Modifier.height(8.dp))
-                    CircularAirGauge(
-                        pm25 = lecturaActual.pm25,
-                        estado = lecturaActual.estado,
-                        size = 148.dp
-                    )
+                    Spacer(Modifier.height(6.dp))
+                    SignalGauge(liveReading, size = 148.dp)
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "El dato MQTT del MQ-2 se muestra en la sección Dispositivo.",
+                        if (liveReading != null) "Actualizado ${formatTime(liveReading.receivedAt)}" else "Inicia Wokwi y espera la conexión MQTT para ver datos.",
                         fontSize = VigiAireTypeScale.Label,
                         color = TextoGris
                     )
+                    Text("Señal relativa MQ-2 · gases/humo · no es PM2.5", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
                 }
             }
 
-            ResumenJornadaCard(muestra14h, latestMqttReading)
+            DatoDelDiaCard()
 
-            RecommendationCard(
-                estado = lecturaActual.estado,
-                textoPersonalizado = lecturaActual.estado.recomendacionHome
-            )
+            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Router, contentDescription = null, tint = AzulPrimario)
+                        Column(Modifier.padding(start = 10.dp)) {
+                            Text("Resumen de hoy", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                            Text("Día de prueba $sessionNumber · $fecha", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        }
+                    }
+                    Text("Inicio de sesión: ${startedAt?.let(::formatTime) ?: "esperando la primera lectura"}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                    if (liveReading != null) {
+                        Text("A las ${formatTime(liveReading.receivedAt)}: ${liveReading.gasAdc} ADC y estado ${liveReading.status}.", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
+                    } else {
+                        Text("No hay una lectura vigente. El resumen aparecerá al recibir datos del circuito.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
+                    }
+                    Text("Lecturas: $readingCount  ·  mínima: ${minimumReading?.gasAdc ?: "—"} ADC  ·  máxima: ${maximumReading?.gasAdc ?: "—"} ADC", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                    Text("Al reiniciar el ESP32, la app detecta el reinicio y comienza un nuevo día de prueba.", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                }
+            }
+
+            RecommendationCard(liveReading?.estado)
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onNavigate(Pantalla.Dispositivo.ruta) },
+                modifier = Modifier.fillMaxWidth().clickable { onNavigate(Pantalla.Dispositivo.ruta) },
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                        Box(
-                            modifier = Modifier.size(44.dp).clip(CircleShape)
-                                .background(if (conectado) VerdeSuave else RojoSuave),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Router, contentDescription = "Simulador", tint = if (conectado) VerdeExito else RojoAlerta)
+                Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.size(42.dp).clip(CircleShape).background(if (connection == MqttConnectionState.CONNECTED) Color(0xFFE4F5EC) else Color(0xFFFFE8E8)), contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Router, contentDescription = null, tint = if (connection == MqttConnectionState.CONNECTED) Color(0xFF138A55) else Color(0xFFCE3434))
                         }
-                        Spacer(Modifier.width(12.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text("Simulador Wokwi", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                            Text(
-                                text = if (conectado) "Conectado por MQTT" else "Sin conexión MQTT",
-                                fontSize = VigiAireTypeScale.Label,
-                                color = if (conectado) VerdeExito else TextoGris
-                            )
+                        Column(Modifier.padding(start = 12.dp)) {
+                            Text("Equipo", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                            Text(connection.label(), fontSize = VigiAireTypeScale.Label, color = TextoGris)
                         }
                     }
-                    Text("Ver dispositivo", fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = AzulPrimario)
+                    Text("Ver", fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = AzulPrimario)
                 }
             }
         }
     }
 }
 
+private data class DatoInformativo(val titulo: String, val texto: String)
+
+private val datosInformativos = listOf(
+    DatoInformativo("El aire puede variar durante el día", "El tráfico y otras fuentes cercanas pueden hacer que las condiciones del aire cambien con el paso de las horas."),
+    DatoInformativo("Ventilar también depende del exterior", "Abrir una ventana renueva el aire interior, pero conviene considerar si afuera hay humo o polvo."),
+    DatoInformativo("Una lectura es solo un momento", "Observar varias mediciones a lo largo del tiempo ayuda a reconocer cambios que una sola lectura no muestra."),
+    DatoInformativo("La ubicación influye", "Una medición cerca de una ventana puede ser distinta de otra tomada en el centro de la habitación."),
+    DatoInformativo("Pequeñas fuentes también cuentan", "El humo de cocina, velas o tabaco puede afectar el aire dentro de una habitación."),
+    DatoInformativo("Mantén libres las entradas de aire", "El polvo acumulado frente a una rejilla o sensor puede dificultar la circulación y alterar su funcionamiento.")
+)
+
 @Composable
-private fun ResumenJornadaCard(
-    muestra14h: DatoHistoricoBarra?,
-    ultimaSenal: MqttGasReading?
-) {
-    val valorPm25 = muestra14h?.pm25 ?: 58.0
-    val estadoMuestra = LecturaAire.calcularEstado(valorPm25)
-    val fechaHoy = remember {
-        SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "PE"))
-            .format(Date())
-            .replaceFirstChar { it.titlecase(Locale("es", "PE")) }
-    }
-
+private fun DatoDelDiaCard() {
+    val dato = remember { datosInformativos.random() }
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Blanco)
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = AzulClaro)
     ) {
-        Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier.size(40.dp).clip(CircleShape).background(AmarilloSuave),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Schedule, contentDescription = null, tint = AzulOscuro)
-                }
-                Spacer(Modifier.width(10.dp))
-                Column {
-                    Text("Resumen de hoy", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                    Text(fechaHoy, fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                }
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("14:00 · muestra PM2.5", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text("${valorPm25.toInt()}", fontSize = VigiAireTypeScale.Metric, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Spacer(Modifier.width(5.dp))
-                        Text("µg/m³", fontSize = VigiAireTypeScale.Label, color = TextoGris, modifier = Modifier.padding(bottom = 5.dp))
-                    }
-                }
-                EstadoPill(estadoMuestra.titulo, estadoMuestra.colorFondo, estadoMuestra.color)
-            }
-
-            Text(
-                text = "Hoy a las 2:00 p. m. la muestra fue ${valorPm25.toInt()} µg/m³: nivel ${estadoMuestra.titulo.lowercase(Locale("es", "PE"))}.",
-                fontSize = VigiAireTypeScale.Body,
-                color = TextoOscuro
-            )
-            Text(
-                text = "Registro de demostración; el MQ-2 simulado entrega una señal relativa, no PM2.5.",
-                fontSize = VigiAireTypeScale.Label,
-                color = TextoGris
-            )
-
-            if (ultimaSenal != null) {
-                Divider(color = FondoGris)
-                Text("Última señal de Wokwi · ${formatHora(ultimaSenal.receivedAt)}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                Text(
-                    text = "${ultimaSenal.gasAdc} ADC · ${ultimaSenal.status}",
-                    fontSize = VigiAireTypeScale.Body,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextoOscuro
-                )
+        Row(
+            Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(Icons.Default.Air, contentDescription = null, tint = AzulPrimario)
+            Column(
+                Modifier.padding(start = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text("Dato del día", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = AzulOscuro)
+                Text(dato.titulo, fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
+                Text(dato.texto, fontSize = VigiAireTypeScale.Label, color = TextoOscuro)
+                Text("Dato informativo · no corresponde a una medición del circuito", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
             }
         }
     }
@@ -328,11 +244,16 @@ private fun ResumenJornadaCard(
 
 @Composable
 private fun EstadoPill(texto: String, fondo: Color, color: Color) {
-    Box(
-        modifier = Modifier.clip(RoundedCornerShape(50)).background(fondo).padding(horizontal = 12.dp, vertical = 7.dp)
-    ) {
-        Text(texto, fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = color)
+    Box(Modifier.clip(RoundedCornerShape(50)).background(fondo).padding(horizontal = 11.dp, vertical = 6.dp)) {
+        Text(texto, fontSize = VigiAireTypeScale.Caption, fontWeight = FontWeight.Bold, color = color)
     }
 }
 
-private fun formatHora(timestamp: Long): String = SimpleDateFormat("HH:mm", Locale("es", "PE")).format(Date(timestamp))
+private fun MqttConnectionState.label(): String = when (this) {
+    MqttConnectionState.CONNECTED -> "Conectado · recibe lecturas"
+    MqttConnectionState.CONNECTING -> "Conectando al simulador…"
+    MqttConnectionState.ERROR -> "Error de conexión"
+    MqttConnectionState.DISCONNECTED -> "Desconectado"
+}
+
+private fun formatTime(timestamp: Long): String = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
