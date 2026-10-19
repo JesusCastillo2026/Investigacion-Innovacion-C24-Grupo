@@ -45,7 +45,7 @@ El detalle de pines, tema MQTT, formato de mensaje y pasos de ejecución está e
 La app está en [`software/AppVigiAire`](software/AppVigiAire/) y se desarrolló con Kotlin y Jetpack Compose. El circuito está organizado en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/); los modelos de la carcasa están en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
 
 - [Abrir circuito simulado en Wokwi](https://wokwi.com/projects/478264195609475073)
-- [Abrir modelo 3D en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit)
+- [Abrir modelo 3D en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit?sharecode=kPaqYq77BRIRYFCdsBkRbAXHNW39ilBV4M7bEdHDeqQ)
 - [Ver archivos STL de referencia](hardware/Modelo_3D_Tinkercad/)
 
 Para ver lecturas en la app, inicia la simulación y luego conecta la app al broker MQTT y al tema configurado en la guía. El broker de demostración es público y usa una conexión sin cifrado; los mensajes pueden no llegar si la red bloquea MQTT por TCP en el puerto 1883.
