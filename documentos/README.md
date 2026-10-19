@@ -14,6 +14,7 @@ Los PDF contienen los avances elaborados por el Grupo 4. La tabla resume el enfo
 | **06** | Hipótesis, decisión técnica y concepto | Se formularon hipótesis de solución, se justificaron decisiones técnicas, se actualizaron la planificación y el Gantt, se aplicó SCAMPER y se documentaron bocetos y una lámina conceptual del prototipo. | [📥 Semana 6.pdf](./Semana%206.pdf) |
 | **07** | Del concepto al prototipo | Se avanzó el ensamble conceptual del módulo en Tinkercad, se definieron criterios de fabricación de sus partes, se diseñó un mockup de cinco pantallas de la aplicación y se registraron tareas en proceso y pendientes de validación. | [📥 Semana 7.pdf](./Semana%207.pdf) |
 | **08** | Planificación y prototipo simulado | Se organizó el trabajo de las semanas 8 y 9 y se documentaron la representación de la estructura, el circuito electrónico simulado en Wokwi y la interfaz móvil. El material distingue la simulación visual y electrónica de una integración física funcional. | [📥 Semana 8.pdf](./Semana%208.pdf) |
+| **09** | Integración y pruebas del prototipo simulado | Se actualizó la planificación de las semanas 8 y 9 y se documentaron la maqueta visual, el circuito simulado en Wokwi y la app Android vinculada por MQTT. Se registraron pruebas del cambio de estado y evidencias para comparar la lectura entre el circuito y la aplicación. | [📥 Semana 9.pdf](./Semana%209.pdf) |
 
 ---
 
