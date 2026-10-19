@@ -1,5 +1,18 @@
-# VigiAire: monitoreo ambiental simulado
+<div align="center">
 
+# 🌿 VigiAire
+### Monitoreo ambiental simulado
+
+**Aire más claro, decisiones mejor informadas**  
+*Un prototipo virtual que explora cómo saber cuándo conviene ventilar.*
+
+![Estado del proyecto](https://img.shields.io/badge/Proyecto-prototipo%20simulado-16866a?style=for-the-badge&logo=github)
+![Microcontrolador](https://img.shields.io/badge/ESP32-Wokwi-34495e?style=for-the-badge)
+![Aplicación](https://img.shields.io/badge/App-Android-3ddc84?style=for-the-badge&logo=android&logoColor=white)
+
+</div>
+
+> 🌬️ **VigiAire** representa una estación que observa señales de calidad del aire y comunica su estado mediante un circuito simulado y una aplicación móvil.
 **Reto:** Visualización de datos ambientales<br>
 **Curso:** Investigación e Innovación Tecnológica (sección C24)<br>
 **Carrera:** Diseño y Desarrollo de Software
@@ -17,7 +30,18 @@
   </tbody>
 </table>
 
-## Acerca del proyecto
+
+
+## 🧭 Contenido
+
+- [Acerca del proyecto](#-acerca-del-proyecto)
+- [Cómo funciona](#-como-funciona)
+- [Hardware simulado](#-hardware-simulado)
+- [Aplicación móvil](#-aplicacion-movil)
+- [Estructura del repositorio](#-estructura-del-repositorio)
+- [Alcance y consideraciones](#-alcance-y-consideraciones)
+
+---## 🌱 Acerca del proyecto
 
 VigiAire explora cómo ayudar a una persona a decidir cuándo ventilar una habitación cercana a una avenida con tráfico. El concepto inicial contemplaba un dispositivo físico para medir partículas y orientar esa decisión. Desde la semana 8, el alcance del equipo cambió: el prototipo electrónico y su comunicación con la aplicación se desarrollan y prueban de manera virtual.
 
@@ -77,3 +101,14 @@ Durante el trabajo se usaron ChatGPT/Codex y Gemini Pro Avanzado como apoyo para
 ## Nota sobre la versión actual
 
 La versión del repositorio documenta un prototipo electrónico simulado. Las lecturas de gas ADC son datos de prueba generados por Wokwi y no deben presentarse como datos de PM2.5, PM10 o calidad real del aire.
+
+
+---
+
+<div align="center">
+
+### 🌎 Pequeñas decisiones también ayudan a cuidar el aire
+
+**VigiAire · Investigación e Innovación Tecnológica · Sección C24**
+
+</div>
