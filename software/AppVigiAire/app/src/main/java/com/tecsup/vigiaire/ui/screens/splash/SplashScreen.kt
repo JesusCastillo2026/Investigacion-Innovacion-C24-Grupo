@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.splash
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,18 +62,18 @@ fun SplashScreen(
 
             Text(
                 text = "Conoce el aire\nque respiras",
-                fontSize = 32.sp,
+                fontSize = VigiAireTypeScale.Display,
                 fontWeight = FontWeight.Bold,
                 color = Blanco,
                 textAlign = TextAlign.Center,
-                lineHeight = 38.sp
+                lineHeight = 40.sp
             )
 
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = "Monitoreo ambiental en tiempo real",
-                fontSize = 16.sp,
+                fontSize = VigiAireTypeScale.Body,
                 fontWeight = FontWeight.Normal,
                 color = Blanco.copy(alpha = 0.85f),
                 textAlign = TextAlign.Center
@@ -89,7 +91,7 @@ fun SplashScreen(
             ) {
                 Text(
                     text = "TECSUP • Proyecto Innovación Sem 08",
-                    fontSize = 12.sp,
+                    fontSize = VigiAireTypeScale.Label,
                     color = Blanco.copy(alpha = 0.9f),
                     fontWeight = FontWeight.Medium
                 )
@@ -111,7 +113,7 @@ fun SplashScreen(
         ) {
             Text(
                 text = "Comenzar",
-                fontSize = 18.sp,
+                fontSize = VigiAireTypeScale.Section,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.padding(horizontal = 6.dp))

@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.detalle
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -68,13 +70,13 @@ fun DetalleScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Detalle del aire",
-                            fontSize = 18.sp,
+                            fontSize = VigiAireTypeScale.Section,
                             fontWeight = FontWeight.Bold,
                             color = TextoOscuro
                         )
                         Text(
                             text = "Lectura del módulo de ventana",
-                            fontSize = 12.sp,
+                            fontSize = VigiAireTypeScale.Label,
                             color = TextoGris
                         )
                     }
@@ -134,14 +136,14 @@ fun DetalleScreen(
 
                     Text(
                         text = "${lecturaActual.pm25} µg/m³",
-                        fontSize = 38.sp,
+                        fontSize = VigiAireTypeScale.Metric,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro
                     )
 
                     Text(
                         text = "PM2.5 · Partículas finas",
-                        fontSize = 14.sp,
+                        fontSize = VigiAireTypeScale.Body,
                         fontWeight = FontWeight.Medium,
                         color = TextoGris
                     )
@@ -160,7 +162,7 @@ fun DetalleScreen(
                             text = "ESTADO: ${lecturaActual.estado.titulo}",
                             color = lecturaActual.estado.color,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            fontSize = VigiAireTypeScale.Label
                         )
                     }
                 }
@@ -199,7 +201,7 @@ fun DetalleScreen(
 
                         Text(
                             text = "¿Qué significa?",
-                            fontSize = 16.sp,
+                            fontSize = VigiAireTypeScale.Body,
                             fontWeight = FontWeight.Bold,
                             color = TextoOscuro
                         )
@@ -209,9 +211,9 @@ fun DetalleScreen(
 
                     Text(
                         text = "Las partículas PM2.5 son contaminantes de tamaño microscópico (2.5 micrómetros) provenientes de la combustión de vehículos y procesos industriales en zonas urbanas como Lima.",
-                        fontSize = 13.sp,
+                        fontSize = VigiAireTypeScale.Label,
                         color = TextoGris,
-                        lineHeight = 18.sp
+                        lineHeight = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -222,10 +224,10 @@ fun DetalleScreen(
                             com.tecsup.vigiaire.data.model.EstadoCalidad.MODERADA -> " Un nivel entre 35 y 75 µg/m³ indica una calidad moderada. Personas sensibles deben tomar precauciones."
                             com.tecsup.vigiaire.data.model.EstadoCalidad.MALA -> " Un nivel mayor a 75 µg/m³ implica aire contaminado de riesgo. Se recomienda mantener puertas y ventanas cerradas."
                         },
-                        fontSize = 13.sp,
+                        fontSize = VigiAireTypeScale.Label,
                         fontWeight = FontWeight.Medium,
                         color = lecturaActual.estado.color,
-                        lineHeight = 18.sp
+                        lineHeight = 20.sp
                     )
                 }
             }
@@ -235,7 +237,7 @@ fun DetalleScreen(
             // Grid de 2 tarjetas: Temperatura y Humedad
             Text(
                 text = "Variables Ambientales",
-                fontSize = 16.sp,
+                fontSize = VigiAireTypeScale.Body,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)

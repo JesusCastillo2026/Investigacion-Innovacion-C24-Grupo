@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.components
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -147,13 +149,13 @@ fun CircularAirGauge(
         ) {
             Text(
                 text = pm25.toInt().toString(),
-                fontSize = 42.sp,
+                fontSize = VigiAireTypeScale.Metric,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro
             )
             Text(
                 text = "µg/m³ PM2.5",
-                fontSize = 12.sp,
+                fontSize = VigiAireTypeScale.Label,
                 color = TextoGris,
                 fontWeight = FontWeight.Medium
             )
@@ -172,7 +174,7 @@ fun CircularAirGauge(
                     text = estado.titulo,
                     color = estado.color,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp
+                    fontSize = VigiAireTypeScale.Label
                 )
             }
         }
@@ -252,7 +254,7 @@ private fun TrafficLightCircle(
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = label,
-            fontSize = 11.sp,
+            fontSize = VigiAireTypeScale.Caption,
             fontWeight = if (isActivo) FontWeight.Bold else FontWeight.Normal,
             color = if (isActivo) Blanco else Color(0xFF94A3B8)
         )
@@ -289,7 +291,7 @@ fun MetricCard(
             ) {
                 Text(
                     text = title,
-                    fontSize = 13.sp,
+                    fontSize = VigiAireTypeScale.Label,
                     fontWeight = FontWeight.Medium,
                     color = TextoGris
                 )
@@ -316,14 +318,14 @@ fun MetricCard(
             ) {
                 Text(
                     text = value,
-                    fontSize = 24.sp,
+                    fontSize = VigiAireTypeScale.Heading,
                     fontWeight = FontWeight.Bold,
                     color = TextoOscuro
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = unit,
-                    fontSize = 13.sp,
+                    fontSize = VigiAireTypeScale.Label,
                     fontWeight = FontWeight.Normal,
                     color = TextoGris,
                     modifier = Modifier.padding(bottom = 3.dp)
@@ -386,14 +388,14 @@ fun RecommendationCard(
             ) {
                 Text(
                     text = "Recomendación de Ventilación",
-                    fontSize = 12.sp,
+                    fontSize = VigiAireTypeScale.Label,
                     fontWeight = FontWeight.Bold,
                     color = estado.color
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = mensaje,
-                    fontSize = 14.sp,
+                    fontSize = VigiAireTypeScale.Body,
                     fontWeight = FontWeight.Medium,
                     color = TextoOscuro
                 )
@@ -457,7 +459,7 @@ fun BarChartWidget(
 
                         Text(
                             text = punto.horaLabel.take(3),
-                            fontSize = 9.sp,
+                            fontSize = VigiAireTypeScale.Caption,
                             color = TextoGris,
                             maxLines = 1,
                             textAlign = TextAlign.Center
@@ -486,7 +488,7 @@ fun VigiAireBottomBar(
             selected = currentRoute == Pantalla.Home.ruta,
             onClick = { onNavigate(Pantalla.Home.ruta) },
             icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-            label = { Text("Inicio", fontSize = 10.sp) },
+            label = { Text("Inicio", fontSize = VigiAireTypeScale.Caption) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = AzulPrimario,
                 selectedTextColor = AzulPrimario,
@@ -500,7 +502,7 @@ fun VigiAireBottomBar(
             selected = currentRoute == Pantalla.Detalle.ruta,
             onClick = { onNavigate(Pantalla.Detalle.ruta) },
             icon = { Icon(Icons.Default.Analytics, contentDescription = "Detalle") },
-            label = { Text("Detalle", fontSize = 10.sp) },
+            label = { Text("Detalle", fontSize = VigiAireTypeScale.Caption) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = AzulPrimario,
                 selectedTextColor = AzulPrimario,
@@ -514,7 +516,7 @@ fun VigiAireBottomBar(
             selected = currentRoute == Pantalla.Recomendacion.ruta,
             onClick = { onNavigate(Pantalla.Recomendacion.ruta) },
             icon = { Icon(Icons.Default.Lightbulb, contentDescription = "Ventilar") },
-            label = { Text("Consejo", fontSize = 10.sp) },
+            label = { Text("Consejo", fontSize = VigiAireTypeScale.Caption) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = AzulPrimario,
                 selectedTextColor = AzulPrimario,
@@ -528,7 +530,7 @@ fun VigiAireBottomBar(
             selected = currentRoute == Pantalla.Tendencia.ruta,
             onClick = { onNavigate(Pantalla.Tendencia.ruta) },
             icon = { Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = "Tendencia") },
-            label = { Text("Tendencia", fontSize = 10.sp) },
+            label = { Text("Tendencia", fontSize = VigiAireTypeScale.Caption) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = AzulPrimario,
                 selectedTextColor = AzulPrimario,
@@ -542,7 +544,7 @@ fun VigiAireBottomBar(
             selected = currentRoute == Pantalla.Dispositivo.ruta,
             onClick = { onNavigate(Pantalla.Dispositivo.ruta) },
             icon = { Icon(Icons.Default.Router, contentDescription = "Equipo") },
-            label = { Text("Equipo", fontSize = 10.sp) },
+            label = { Text("Equipo", fontSize = VigiAireTypeScale.Caption) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = AzulPrimario,
                 selectedTextColor = AzulPrimario,

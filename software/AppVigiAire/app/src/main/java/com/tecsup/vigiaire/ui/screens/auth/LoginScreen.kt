@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.auth
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -104,7 +106,7 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "VIGIAIRE",
-                            fontSize = 20.sp,
+                            fontSize = VigiAireTypeScale.Heading,
                             fontWeight = FontWeight.Bold,
                             color = Blanco,
                             letterSpacing = 2.sp
@@ -115,13 +117,13 @@ fun LoginScreen(
 
                     Text(
                         text = "Bienvenido",
-                        fontSize = 30.sp,
+                        fontSize = VigiAireTypeScale.Display,
                         fontWeight = FontWeight.Bold,
                         color = Blanco
                     )
                     Text(
                         text = "Consulta el aire de tu zona",
-                        fontSize = 15.sp,
+                        fontSize = VigiAireTypeScale.Body,
                         color = Blanco.copy(alpha = 0.85f)
                     )
                 }
@@ -142,7 +144,7 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = "Iniciar Sesión",
-                        fontSize = 20.sp,
+                        fontSize = VigiAireTypeScale.Heading,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro
                     )
@@ -151,7 +153,7 @@ fun LoginScreen(
 
                     Text(
                         text = "Correo Electrónico",
-                        fontSize = 13.sp,
+                        fontSize = VigiAireTypeScale.Label,
                         fontWeight = FontWeight.Medium,
                         color = TextoGris
                     )
@@ -186,7 +188,7 @@ fun LoginScreen(
 
                     Text(
                         text = "Contraseña",
-                        fontSize = 13.sp,
+                        fontSize = VigiAireTypeScale.Label,
                         fontWeight = FontWeight.Medium,
                         color = TextoGris
                     )
@@ -238,7 +240,7 @@ fun LoginScreen(
                             Text(
                                 text = errorMessage ?: "",
                                 color = RojoAlerta,
-                                fontSize = 13.sp,
+                                fontSize = VigiAireTypeScale.Label,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -265,7 +267,7 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = "Iniciar Sesión",
-                            fontSize = 16.sp,
+                            fontSize = VigiAireTypeScale.Body,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -274,7 +276,7 @@ fun LoginScreen(
 
                     Text(
                         text = "¿No tienes cuenta? Crear cuenta",
-                        fontSize = 14.sp,
+                        fontSize = VigiAireTypeScale.Body,
                         fontWeight = FontWeight.Medium,
                         color = AzulPrimario,
                         textAlign = TextAlign.Center,
@@ -305,7 +307,7 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = " Usuario Demo TECSUP:\n email: demo@vigiaire.com | clave: 123456",
-                        fontSize = 12.sp,
+                        fontSize = VigiAireTypeScale.Label,
                         color = AzulOscuro,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,

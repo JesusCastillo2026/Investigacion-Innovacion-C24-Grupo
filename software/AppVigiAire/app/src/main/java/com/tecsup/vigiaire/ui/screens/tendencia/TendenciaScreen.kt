@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.tendencia
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +72,8 @@ fun TendenciaScreen(
     val minPm = historico.minOfOrNull { it.pm25 } ?: 15.0
     val maxPm = historico.maxOfOrNull { it.pm25 } ?: 92.0
     val promedioPm = (historico.map { it.pm25 }.average()).takeIf { !it.isNaN() } ?: 45.0
+    val horaPico = historico.maxByOrNull { it.pm25 }
+    val valor14h = historico.firstOrNull { it.horaLabel.startsWith("14h") }?.pm25 ?: 58.0
 
     Scaffold(
         topBar = {
@@ -78,13 +82,13 @@ fun TendenciaScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Tendencia de hoy",
-                            fontSize = 18.sp,
+                            fontSize = VigiAireTypeScale.Section,
                             fontWeight = FontWeight.Bold,
                             color = TextoOscuro
                         )
                         Text(
                             text = "Cambios del aire durante el día",
-                            fontSize = 12.sp,
+                            fontSize = VigiAireTypeScale.Label,
                             color = TextoGris
                         )
                     }
@@ -119,8 +123,8 @@ fun TendenciaScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "PM2.5 · últimas 12 horas",
-                    fontSize = 15.sp,
+                    text = "Muestra PM2.5 · 08:00–19:00",
+                    fontSize = VigiAireTypeScale.Body,
                     fontWeight = FontWeight.Bold,
                     color = TextoOscuro
                 )
@@ -132,8 +136,8 @@ fun TendenciaScreen(
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "12 Puntos Mock",
-                        fontSize = 11.sp,
+                        text = "Datos de ejemplo",
+                        fontSize = VigiAireTypeScale.Caption,
                         color = AzulPrimario,
                         fontWeight = FontWeight.Bold
                     )
@@ -179,10 +183,10 @@ fun TendenciaScreen(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Text(
-                        text = "El nivel subió en la hora punta (8:00 AM - 10:00 AM) alcanzando 92 µg/m³ y luego descendió paulatinamente.",
-                        fontSize = 13.sp,
+                        text = "El valor más alto de la muestra fue ${horaPico?.pm25?.toInt() ?: maxPm.toInt()} µg/m³ a las ${horaPico?.horaLabel?.take(2) ?: "13"}:00. A las 14:00 fue ${valor14h.toInt()} µg/m³. Son datos simulados para la demostración.",
+                        fontSize = VigiAireTypeScale.Label,
                         color = TextoGris,
-                        lineHeight = 18.sp
+                        lineHeight = 20.sp
                     )
                 }
             }
@@ -191,8 +195,8 @@ fun TendenciaScreen(
 
             // Tarjetas de Resumen Estadístico
             Text(
-                text = "Resumen de la Jornada",
-                fontSize = 16.sp,
+                text = "Resumen de la muestra",
+                fontSize = VigiAireTypeScale.Body,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
@@ -205,21 +209,21 @@ fun TendenciaScreen(
                 ResumenMiniCard(
                     titulo = "Mínimo",
                     valor = "${minPm.toInt()} µg/m³",
-                    subtitulo = "Aire limpio",
+                    subtitulo = "Dato simulado",
                     modifier = Modifier.weight(1f)
                 )
 
                 ResumenMiniCard(
                     titulo = "Promedio",
                     valor = "${promedioPm.roundToInt()} µg/m³",
-                    subtitulo = "Nivel diario",
+                    subtitulo = "Dato simulado",
                     modifier = Modifier.weight(1f)
                 )
 
                 ResumenMiniCard(
                     titulo = "Pico Máx.",
                     valor = "${maxPm.toInt()} µg/m³",
-                    subtitulo = "Hora punta",
+                    subtitulo = "Dato simulado",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -231,7 +235,7 @@ fun TendenciaScreen(
                 onClick = {
                     Repositorio.generarNuevaLectura()
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar("Histórico recalculado con ${lecturas.size} registros en memoria.")
+                        snackbarHostState.showSnackbar("Se agregó una lectura simulada. Hay ${lecturas.size} registros en memoria.")
                     }
                 },
                 modifier = Modifier
@@ -251,7 +255,7 @@ fun TendenciaScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Ver historial y lecturas",
-                    fontSize = 16.sp,
+                    fontSize = VigiAireTypeScale.Body,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -279,21 +283,21 @@ private fun ResumenMiniCard(
         ) {
             Text(
                 text = titulo,
-                fontSize = 11.sp,
+                fontSize = VigiAireTypeScale.Caption,
                 color = TextoGris,
                 fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = valor,
-                fontSize = 16.sp,
+                fontSize = VigiAireTypeScale.Body,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitulo,
-                fontSize = 10.sp,
+                fontSize = VigiAireTypeScale.Caption,
                 color = TextoGris
             )
         }

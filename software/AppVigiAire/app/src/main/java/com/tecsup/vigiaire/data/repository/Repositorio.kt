@@ -21,7 +21,7 @@ object Repositorio {
     private val _lecturas = MutableStateFlow<List<LecturaAire>>(emptyList())
     val lecturas: StateFlow<List<LecturaAire>> = _lecturas.asStateFlow()
 
-    // Histórico de las últimas 12 horas para el gráfico
+    // Muestra referencial de 12 horas para el gráfico y el resumen de Home.
     private val _historico12Horas = MutableStateFlow<List<DatoHistoricoBarra>>(emptyList())
     val historico12Horas: StateFlow<List<DatoHistoricoBarra>> = _historico12Horas.asStateFlow()
 
@@ -85,9 +85,9 @@ object Repositorio {
     }
 
     private fun generarHistoricoInicial() {
-        // Simulación de 12 horas (Hora punta de tráfico a las 8-10 AM)
-        val horas = listOf("01h", "02h", "03h", "04h", "05h", "06h", "07h", "08h (Punta)", "09h", "10h", "11h", "12h (Ahora)")
-        val valores = listOf(18.0, 15.0, 22.0, 28.0, 32.0, 45.0, 68.0, 92.0, 85.0, 54.0, 38.0, 28.0)
+        // Datos ficticios para la presentación; incluyen el corte de las 2 p. m.
+        val horas = listOf("08h", "09h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h")
+        val valores = listOf(24.0, 28.0, 36.0, 48.0, 62.0, 84.0, 58.0, 53.0, 45.0, 38.0, 31.0, 26.0)
 
         val lista = horas.zip(valores).map { (hora, valPm) ->
             DatoHistoricoBarra(

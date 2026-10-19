@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.perfil
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +76,7 @@ fun PerfilScreen(
                 title = {
                     Text(
                         text = "Mi Perfil",
-                        fontSize = 18.sp,
+                        fontSize = VigiAireTypeScale.Section,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro
                     )
@@ -121,7 +123,7 @@ fun PerfilScreen(
             ) {
                 Text(
                     text = iniciales,
-                    fontSize = 42.sp,
+                    fontSize = VigiAireTypeScale.Metric,
                     fontWeight = FontWeight.Bold,
                     color = Blanco
                 )
@@ -132,14 +134,14 @@ fun PerfilScreen(
             // Nombre y Correo
             Text(
                 text = nombreUsuario,
-                fontSize = 24.sp,
+                fontSize = VigiAireTypeScale.Heading,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro
             )
 
             Text(
                 text = emailUsuario,
-                fontSize = 14.sp,
+                fontSize = VigiAireTypeScale.Body,
                 color = TextoGris
             )
 
@@ -158,7 +160,7 @@ fun PerfilScreen(
                 ) {
                     Text(
                         text = "Información del Proyecto",
-                        fontSize = 15.sp,
+                        fontSize = VigiAireTypeScale.Body,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro
                     )
@@ -185,8 +187,8 @@ fun PerfilScreen(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
-                            Text(text = "Institución", fontSize = 11.sp, color = TextoGris)
-                            Text(text = "TECSUP • Proyecto Innovación", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
+                            Text(text = "Institución", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                            Text(text = "TECSUP • Proyecto Innovación", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
                         }
                     }
 
@@ -210,8 +212,8 @@ fun PerfilScreen(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
-                            Text(text = "Hito de Evaluación", fontSize = 11.sp, color = TextoGris)
-                            Text(text = "Semana 08 • Gemelo Digital VigiAire", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
+                            Text(text = "Hito de Evaluación", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                            Text(text = "Semana 08 • Gemelo Digital VigiAire", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
                         }
                     }
                 }
@@ -242,7 +244,7 @@ fun PerfilScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Cerrar sesión",
-                    fontSize = 16.sp,
+                    fontSize = VigiAireTypeScale.Body,
                     fontWeight = FontWeight.Bold
                 )
             }

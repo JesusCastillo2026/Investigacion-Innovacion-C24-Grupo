@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.construccion
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +56,7 @@ fun EnConstruccionScreen(
                 title = {
                     Text(
                         text = titulo,
-                        fontSize = 18.sp,
+                        fontSize = VigiAireTypeScale.Section,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro
                     )
@@ -109,7 +111,7 @@ fun EnConstruccionScreen(
 
                     Text(
                         text = "Módulo de $titulo",
-                        fontSize = 20.sp,
+                        fontSize = VigiAireTypeScale.Heading,
                         fontWeight = FontWeight.Bold,
                         color = TextoOscuro,
                         textAlign = TextAlign.Center
@@ -119,7 +121,7 @@ fun EnConstruccionScreen(
 
                     Text(
                         text = "Esta funcionalidad se encuentra en desarrollo activo para la entrega de la Semana 09.",
-                        fontSize = 14.sp,
+                        fontSize = VigiAireTypeScale.Body,
                         color = TextoGris,
                         textAlign = TextAlign.Center
                     )
@@ -134,7 +136,7 @@ fun EnConstruccionScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "Próximamente • Semana 09",
-                                fontSize = 12.sp,
+                                fontSize = VigiAireTypeScale.Label,
                                 fontWeight = FontWeight.Bold,
                                 color = AzulOscuro
                             )

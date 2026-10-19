@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.recomendacion
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,13 +71,13 @@ fun RecomendacionScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "¿Ventilo ahora?",
-                            fontSize = 18.sp,
+                            fontSize = VigiAireTypeScale.Section,
                             fontWeight = FontWeight.Bold,
                             color = TextoOscuro
                         )
                         Text(
                             text = "Esta recomendación se basa en la lectura del módulo",
-                            fontSize = 11.sp,
+                            fontSize = VigiAireTypeScale.Caption,
                             color = TextoGris
                         )
                     }
@@ -105,7 +107,7 @@ fun RecomendacionScreen(
             // Semáforo visual con 3 círculos (Rojo, Amarillo, Verde) con el activo resaltado
             Text(
                 text = "Indicador de Semáforo",
-                fontSize = 15.sp,
+                fontSize = VigiAireTypeScale.Body,
                 fontWeight = FontWeight.Bold,
                 color = TextoOscuro
             )
@@ -157,7 +159,7 @@ fun RecomendacionScreen(
 
                         Text(
                             text = "¿Qué puedo hacer mientras?",
-                            fontSize = 16.sp,
+                            fontSize = VigiAireTypeScale.Body,
                             fontWeight = FontWeight.Bold,
                             color = TextoOscuro
                         )
@@ -200,9 +202,9 @@ fun RecomendacionScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = accion,
-                                fontSize = 13.sp,
+                                fontSize = VigiAireTypeScale.Label,
                                 color = TextoGris,
-                                lineHeight = 18.sp
+                                lineHeight = 20.sp
                             )
                         }
                     }
@@ -225,7 +227,7 @@ fun RecomendacionScreen(
             ) {
                 Text(
                     text = "Ver historial y lecturas",
-                    fontSize = 16.sp,
+                    fontSize = VigiAireTypeScale.Body,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(8.dp))

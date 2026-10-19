@@ -1,5 +1,7 @@
 package com.tecsup.vigiaire.ui.screens.dispositivo
 
+import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -85,8 +87,8 @@ fun DispositivoScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("VigiAire simulado", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Text("Datos en vivo desde Wokwi", fontSize = 12.sp, color = TextoGris)
+                        Text("VigiAire simulado", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                        Text("Datos en vivo desde Wokwi", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
@@ -120,8 +122,8 @@ fun DispositivoScreen(
                             modifier = Modifier.size(30.dp).clip(CircleShape).background(stateBackground).padding(5.dp)
                         )
                         Column {
-                            Text(stateText, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = stateColor)
-                            Text("ESP32 Wokwi · MQTT", fontSize = 12.sp, color = TextoGris)
+                            Text(stateText, fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = stateColor)
+                            Text("ESP32 Wokwi · MQTT", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                         }
                     }
 
@@ -146,9 +148,9 @@ fun DispositivoScreen(
                         }
                     }
 
-                    Text("Broker: ${MqttVigiAireClient.BROKER}", fontSize = 12.sp, color = TextoGris)
-                    Text("Tema: ${MqttVigiAireClient.TOPIC}", fontSize = 11.sp, color = TextoGris)
-                    error?.let { Text("Detalle: $it", fontSize = 12.sp, color = RojoAlerta) }
+                    Text("Broker: ${MqttVigiAireClient.BROKER}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                    Text("Tema: ${MqttVigiAireClient.TOPIC}", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                    error?.let { Text("Detalle: $it", fontSize = VigiAireTypeScale.Label, color = RojoAlerta) }
                 }
             }
 
@@ -158,20 +160,20 @@ fun DispositivoScreen(
                 colors = CardDefaults.cardColors(containerColor = Blanco)
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Lectura recibida", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                    Text("Lectura recibida", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
                     if (reading == null) {
                         Text(
                             text = "Aún no llega una lectura. Inicia la simulación en Wokwi y deja esta pantalla conectada.",
-                            fontSize = 14.sp,
+                            fontSize = VigiAireTypeScale.Body,
                             color = TextoGris,
                             lineHeight = 20.sp
                         )
                     } else {
                         val value = reading!!
-                        Text("${value.gasAdc}", fontSize = 42.sp, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Text("señal relativa MQ-2 · ADC 0–4095", fontSize = 13.sp, color = TextoGris)
-                        Text("Estado del circuito: ${value.status}", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AzulOscuro)
-                        Text("Mensaje #${value.sequence} · ${formatTime(value.receivedAt)}", fontSize = 12.sp, color = TextoGris)
+                        Text("${value.gasAdc}", fontSize = VigiAireTypeScale.Metric, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                        Text("señal relativa MQ-2 · ADC 0–4095", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        Text("Estado del circuito: ${value.status}", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = AzulOscuro)
+                        Text("Mensaje #${value.sequence} · ${formatTime(value.receivedAt)}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 }
             }
@@ -184,9 +186,9 @@ fun DispositivoScreen(
                 Text(
                     text = "Esta conexión muestra la señal simulada del MQ-2 para gases/humo. No es una lectura de PM2.5 ni una medición real de calidad del aire.",
                     modifier = Modifier.padding(16.dp),
-                    fontSize = 13.sp,
+                    fontSize = VigiAireTypeScale.Label,
                     color = AzulOscuro,
-                    lineHeight = 19.sp
+                    lineHeight = 20.sp
                 )
             }
         }
