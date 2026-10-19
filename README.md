@@ -38,23 +38,23 @@ Los umbrales son parámetros demostrativos del programa; los estados no represen
 | Resistencias de 220 Ω | Limitan la corriente de los LEDs en el esquema simulado. |
 | Cables virtuales | Representan alimentación, tierra y conexiones de señal entre componentes. |
 
-El detalle de pines, tema MQTT, formato de mensaje y pasos de ejecución está en [la guía del simulador](software/VigiAireSimulator_Wokwi/README.md).
+El detalle de pines, tema MQTT, formato de mensaje y pasos de ejecución está en [la guía del circuito simulado](hardware/Circuito_Simulado_Wokwi/README.md).
 
-## Aplicación Android y simulador
+## Aplicación Android y archivos del proyecto
 
-La app se encuentra en [`software/AppVigiAire`](software/AppVigiAire/) y está desarrollada en Kotlin con Jetpack Compose. El circuito de demostración está en [`software/VigiAireSimulator_Wokwi`](software/VigiAireSimulator_Wokwi/), con su código y diagrama de Wokwi.
+La app se encuentra en [`software/AppVigiAire`](software/AppVigiAire/) y está desarrollada en Kotlin con Jetpack Compose. El circuito de demostración se organiza en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/), y el diseño de carcasa en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
 
-- [Abrir simulador VigiAire en Wokwi](https://wokwi.com/projects/478264195609475073)
-- [Guía para ejecutar y conectar la app](software/VigiAireSimulator_Wokwi/README.md)
+- [Abrir circuito simulado en Wokwi](https://wokwi.com/projects/478264195609475073)
+- [Abrir modelo 3D en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit)
 
 Para ver lecturas en la app, inicia la simulación y luego conecta la app al broker MQTT y al tema configurado en la guía. El broker de demostración es público y usa una conexión sin cifrado; los mensajes pueden no llegar si la red bloquea MQTT por TCP en el puerto 1883.
 
 ## Estructura del repositorio
 
 - [`documentos/`](documentos/): avances, planificación y documentación del proyecto.
-- [`hardware/`](hardware/): material de diseño y representación del prototipo.
+- [`hardware/Circuito_Simulado_Wokwi/`](hardware/Circuito_Simulado_Wokwi/): firmware y diagrama del circuito virtual.
+- [`hardware/Modelo_3D_Tinkercad/`](hardware/Modelo_3D_Tinkercad/): referencia del modelo estructural 3D.
 - [`software/AppVigiAire/`](software/AppVigiAire/): aplicación Android.
-- [`software/VigiAireSimulator_Wokwi/`](software/VigiAireSimulator_Wokwi/): circuito y firmware simulados en Wokwi.
 
 ## Uso de herramientas de IA
 
