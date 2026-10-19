@@ -4,6 +4,19 @@
 **Curso:** Investigación e Innovación Tecnológica (sección C24)<br>
 **Carrera:** Diseño y Desarrollo de Software
 
+<table>
+  <thead>
+    <tr><th colspan="3">Docente: Mejia León, Maria Ángela</th></tr>
+    <tr><th>Integrante</th><th>Carrera</th><th>Rol</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Vasquez Flores Luis Antonio</td><td>Diseño y Desarrollo de Software</td><td>Gestor de Proyecto y Documentación</td></tr>
+    <tr><td>Franklin Gonzales Palomino</td><td>Electricidad Industrial</td><td>Analista de Calidad y Optimización</td></tr>
+    <tr><td>Jesus Castillo Sumire</td><td>Diseño y Desarrollo de Software</td><td>Diseñador de Prototipos 3D</td></tr>
+    <tr><td>Marko Osorio</td><td>Diseño y Desarrollo de Software</td><td>Desarrollador de Integración Digital</td></tr>
+  </tbody>
+</table>
+
 ## Acerca del proyecto
 
 VigiAire explora cómo ayudar a una persona a decidir cuándo ventilar una habitación cercana a una avenida con tráfico. El concepto inicial contemplaba un dispositivo físico para medir partículas y orientar esa decisión. Desde la semana 8, el alcance del equipo cambió: el prototipo electrónico y su comunicación con la aplicación se desarrollan y prueban de manera virtual.
