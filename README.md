@@ -8,7 +8,7 @@
 
 VigiAire explora cómo ayudar a una persona a decidir cuándo ventilar una habitación cercana a una avenida con tráfico. El concepto inicial contemplaba un dispositivo físico para medir partículas y orientar esa decisión. Desde la semana 8, el alcance del equipo cambió: el prototipo electrónico y su comunicación con la aplicación se desarrollan y prueban de manera virtual.
 
-El circuito funcional está simulado en Wokwi con un ESP32, una señal de gas/humo, una pantalla LCD y tres LEDs. La aplicación Android recibe por MQTT la lectura analógica simulada y el estado del circuito. Si se muestra una maqueta de cartón en el material del proyecto, esta representa la apariencia de la carcasa; no es un dispositivo electrónico funcional.
+El circuito funcional está simulado en Wokwi con un ESP32, una señal de gas/humo, una pantalla LCD y tres LEDs. La aplicación Android recibe por MQTT la lectura analógica simulada y el estado del circuito. La maqueta física de cartón presentada en el material representa la carcasa; no contiene un circuito electrónico funcional.
 
 ## Alcance y límites de las lecturas
 
@@ -40,12 +40,13 @@ Los umbrales son parámetros demostrativos del programa; los estados no represen
 
 El detalle de pines, tema MQTT, formato de mensaje y pasos de ejecución está en [la guía del circuito simulado](hardware/Circuito_Simulado_Wokwi/README.md).
 
-## Aplicación Android y archivos del proyecto
+## Aplicación y archivos del proyecto
 
-La app se encuentra en [`software/AppVigiAire`](software/AppVigiAire/) y está desarrollada en Kotlin con Jetpack Compose. El circuito de demostración se organiza en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/), y el diseño de carcasa en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
+La app está en [`software/AppVigiAire`](software/AppVigiAire/) y se desarrolló con Kotlin y Jetpack Compose. El circuito está organizado en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/); los modelos de la carcasa están en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
 
 - [Abrir circuito simulado en Wokwi](https://wokwi.com/projects/478264195609475073)
 - [Abrir modelo 3D en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit)
+- [Ver archivos STL de referencia](hardware/Modelo_3D_Tinkercad/)
 
 Para ver lecturas en la app, inicia la simulación y luego conecta la app al broker MQTT y al tema configurado en la guía. El broker de demostración es público y usa una conexión sin cifrado; los mensajes pueden no llegar si la red bloquea MQTT por TCP en el puerto 1883.
 
@@ -53,7 +54,7 @@ Para ver lecturas en la app, inicia la simulación y luego conecta la app al bro
 
 - [`documentos/`](documentos/): avances, planificación y documentación del proyecto.
 - [`hardware/Circuito_Simulado_Wokwi/`](hardware/Circuito_Simulado_Wokwi/): firmware y diagrama del circuito virtual.
-- [`hardware/Modelo_3D_Tinkercad/`](hardware/Modelo_3D_Tinkercad/): referencia del modelo estructural 3D.
+- [`hardware/Modelo_3D_Tinkercad/`](hardware/Modelo_3D_Tinkercad/): referencia Tinkercad y modelos STL.
 - [`software/AppVigiAire/`](software/AppVigiAire/): aplicación Android.
 
 ## Uso de herramientas de IA
