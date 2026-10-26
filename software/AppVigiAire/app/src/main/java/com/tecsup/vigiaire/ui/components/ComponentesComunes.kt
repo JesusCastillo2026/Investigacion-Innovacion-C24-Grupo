@@ -413,7 +413,12 @@ fun BarChartWidget(
     datos: List<MqttGasReading>,
     modifier: Modifier = Modifier
 ) {
-    val maxAdc = (datos.maxOfOrNull { it.gasAdc } ?: 4095).coerceAtLeast(1)
+    val maxAdc = 4095f
+    val labelIndices = if (datos.size <= 5) {
+        datos.indices.toList()
+    } else {
+        (0..4).map { it * datos.lastIndex / 4 }
+    }
 
     Card(
         modifier = modifier
@@ -428,7 +433,7 @@ fun BarChartWidget(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp),
+                    .height(140.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -438,34 +443,36 @@ fun BarChartWidget(
                     }
                 }
                 datos.forEach { punto ->
-                    val barHeightFraction = (punto.gasAdc.toFloat() / maxAdc).coerceIn(0.02f, 1.0f)
+                    val barHeightFraction = (punto.gasAdc.coerceIn(0, 4095) / maxAdc).coerceIn(0.02f, 1.0f)
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.BottomCenter
                     ) {
                         Box(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(14.dp)
-                                    .fillMaxHeight(barHeightFraction)
-                                    .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                                    .background(punto.estado.color)
-                            )
-                        }
+                                .width(7.dp)
+                                .fillMaxHeight(barHeightFraction)
+                                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
+                                .background(punto.estado.color)
+                        )
+                    }
+                }
+            }
 
-                        Spacer(modifier = Modifier.height(6.dp))
-
+            if (datos.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(7.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    labelIndices.forEach { index ->
                         Text(
-                            text = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
-                                .format(java.util.Date(punto.receivedAt)).takeLast(5),
+                            text = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                                .format(java.util.Date(datos[index].receivedAt)),
                             fontSize = VigiAireTypeScale.Caption,
                             color = TextoGris,
                             maxLines = 1,

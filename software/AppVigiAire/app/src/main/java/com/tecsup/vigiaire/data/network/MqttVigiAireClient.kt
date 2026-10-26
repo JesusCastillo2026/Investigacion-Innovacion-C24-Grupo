@@ -90,8 +90,10 @@ object MqttVigiAireClient {
                         require(json.optString("sensor") == "MQ-2")
                         val rawStatus = json.getString("status").uppercase()
                         require(EstadoSensor.from(rawStatus) != EstadoSensor.DESCONOCIDO)
+                        val gasAdc = json.getInt("gasAdc")
+                        require(gasAdc in 0..4095) { "La lectura ADC del ESP32 debe estar entre 0 y 4095." }
                         MqttGasReading(
-                            gasAdc = json.getInt("gasAdc").coerceIn(0, 4095),
+                            gasAdc = gasAdc,
                             status = rawStatus,
                             sequence = json.optLong("seq", 0L),
                             uptimeMs = json.optLong("uptimeMs", 0L).coerceAtLeast(0L),
