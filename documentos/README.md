@@ -15,6 +15,7 @@ Los PDF contienen los avances elaborados por el Grupo 4. La tabla resume el enfo
 | **07** | Del concepto al prototipo | Se avanzó el ensamble conceptual del módulo en Tinkercad, se definieron criterios de fabricación de sus partes, se diseñó un mockup de cinco pantallas de la aplicación y se registraron tareas en proceso y pendientes de validación. | [📥 Semana 7.pdf](./Semana%207.pdf) |
 | **08** | Planificación y prototipo simulado | Se organizó el trabajo de las semanas 8 y 9 y se documentaron la representación de la estructura, el circuito electrónico simulado en Wokwi y la interfaz móvil. El material distingue la simulación visual y electrónica de una integración física funcional. | [📥 Semana 8.pdf](./Semana%208.pdf) |
 | **09** | Integración y pruebas del prototipo simulado | Se actualizó la planificación de las semanas 8 y 9 y se documentaron la maqueta visual, el circuito simulado en Wokwi y la app Android vinculada por MQTT. Se registraron pruebas del cambio de estado y evidencias para comparar la lectura entre el circuito y la aplicación. | [📥 Semana 9.pdf](./Semana%209.pdf) |
+| **10** | Testeo del prototipo y validación con participantes | Se presentó el prototipo virtual de Wokwi y la app Android conectada por MQTT a dos usuarios finales y una persona experta. Se registraron sus observaciones en mallas receptoras y se identificaron oportunidades de mejora. | [📥 Semana 10.pdf](./Semana%2010.pdf) |
 
 ---
 
