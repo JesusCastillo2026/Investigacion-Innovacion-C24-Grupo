@@ -59,6 +59,7 @@ import com.tecsup.vigiaire.data.repository.Repositorio
 import com.tecsup.vigiaire.navigation.Pantalla
 import com.tecsup.vigiaire.ui.components.RecommendationCard
 import com.tecsup.vigiaire.ui.components.SignalGauge
+import com.tecsup.vigiaire.ui.components.TarjetaRangosEstado
 import com.tecsup.vigiaire.ui.components.VigiAireBottomBar
 import com.tecsup.vigiaire.ui.theme.AzulClaro
 import com.tecsup.vigiaire.ui.theme.AzulOscuro
@@ -183,6 +184,17 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             }
 
             RecommendationCard(liveReading?.estado)
+
+            TarjetaRangosEstado()
+
+            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
+                Text(
+                    "Nota: Las lecturas y recomendaciones son simuladas por el circuito MQ-2. No constituyen mediciones oficiales ni miden PM2.5.",
+                    Modifier.padding(16.dp),
+                    fontSize = VigiAireTypeScale.Label,
+                    color = TextoOscuro
+                )
+            }
 
             Card(
                 modifier = Modifier.fillMaxWidth().clickable { onNavigate(Pantalla.Dispositivo.ruta) },

@@ -569,3 +569,96 @@ fun VigiAireBottomBar(
         )
     }
 }
+
+/**
+ * Componente público TarjetaRangosEstado para mostrar los 3 estados y sus rangos ADC.
+ * Accesible desde cualquier pantalla.
+ */
+@Composable
+fun TarjetaRangosEstado(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(4.dp, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Blanco)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "Rangos de Estado (MQ-2)",
+                fontSize = VigiAireTypeScale.Section,
+                fontWeight = FontWeight.Bold,
+                color = TextoOscuro
+            )
+            Text(
+                text = "Umbrales configurados en el simulador para la señal analógica:",
+                fontSize = VigiAireTypeScale.Label,
+                color = TextoGris
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+
+            EstadoRangoRow(
+                estado = EstadoSensor.VENTILE,
+                rango = "0 - 1500 ADC",
+                descripcion = "Aire limpio / Umbral bajo"
+            )
+            EstadoRangoRow(
+                estado = EstadoSensor.ESPERE,
+                rango = "1501 - 3000 ADC",
+                descripcion = "Precaución / Esperar"
+            )
+            EstadoRangoRow(
+                estado = EstadoSensor.ALERTA,
+                rango = "3001 - 4095 ADC",
+                descripcion = "Alerta digital activada"
+            )
+        }
+    }
+}
+
+@Composable
+private fun EstadoRangoRow(
+    estado: EstadoSensor,
+    rango: String,
+    descripcion: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(estado.colorFondo)
+            .border(1.dp, estado.color.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(14.dp)
+                    .clip(CircleShape)
+                    .background(estado.color)
+            )
+            Column {
+                Text(
+                    text = "${estado.titulo}: $rango",
+                    fontSize = VigiAireTypeScale.Body,
+                    fontWeight = FontWeight.Bold,
+                    color = estado.color
+                )
+                Text(
+                    text = descripcion,
+                    fontSize = VigiAireTypeScale.Caption,
+                    color = TextoGris
+                )
+            }
+        }
+    }
+}
+
