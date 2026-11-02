@@ -1,7 +1,9 @@
 package com.tecsup.vigiaire.ui.screens.tendencia
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,9 +29,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tecsup.vigiaire.data.network.MqttConnectionState
 import com.tecsup.vigiaire.data.network.MqttVigiAireClient
 import com.tecsup.vigiaire.ui.components.BarChartWidget
@@ -38,6 +43,7 @@ import com.tecsup.vigiaire.ui.theme.AzulClaro
 import com.tecsup.vigiaire.ui.theme.AzulPrimario
 import com.tecsup.vigiaire.ui.theme.Blanco
 import com.tecsup.vigiaire.ui.theme.FondoGris
+import com.tecsup.vigiaire.ui.theme.RojoAlerta
 import com.tecsup.vigiaire.ui.theme.TextoGris
 import com.tecsup.vigiaire.ui.theme.TextoOscuro
 import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
@@ -76,10 +82,41 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Señal · últimas ${points.size} de $readingCount", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                EstadoPill(if (live != null) "EN VIVO" else "SIN SEÑAL")
+            // EN VIVO prominent header with current ADC value
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Blanco),
+                modifier = Modifier.fillMaxWidth().shadow(4.dp, RoundedCornerShape(16.dp))
+            ) {
+                Row(
+                    Modifier.fillMaxWidth().padding(18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            EstadoPill(if (live != null) "EN VIVO" else "SIN SEÑAL")
+                            if (live != null) {
+                                Box(Modifier.clip(RoundedCornerShape(8.dp)).background(live.estado.colorFondo).padding(horizontal = 8.dp, vertical = 2.dp)) {
+                                    Text(live.estado.titulo, fontSize = VigiAireTypeScale.Caption, fontWeight = FontWeight.Bold, color = live.estado.color)
+                                }
+                            }
+                        }
+                        Text("Señal relativa MQ-2 · simulación, no mide PM2.5", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = live?.let { "${it.gasAdc}" } ?: "—",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AzulPrimario
+                        )
+                        Text("ADC actual", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                    }
+                }
             }
+
+            Text("Señal · últimas ${points.size} de $readingCount", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
             BarChartWidget(datos = points)
 
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
@@ -99,13 +136,13 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
             Text("Resumen de esta sesión", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard("Mínimo", minimumReading?.gasAdc?.toString() ?: "—", Modifier.weight(1f))
-                StatCard("Promedio", sessionAverage?.toString() ?: "—", Modifier.weight(1f))
-                StatCard("Máximo", maximumReading?.gasAdc?.toString() ?: "—", Modifier.weight(1f))
+                StatCard("Mínimo", minimumReading?.gasAdc?.toString() ?: "—", Modifier.weight(1f), isMax = false)
+                StatCard("Promedio", sessionAverage?.toString() ?: "—", Modifier.weight(1f), isMax = false)
+                StatCard("Máximo", maximumReading?.gasAdc?.toString() ?: "—", Modifier.weight(1.1f), isMax = true)
             }
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
                 Text(
-                    "El gráfico se actualiza al recibir mensajes. Al detectar que el ESP32 reinició (su tiempo de actividad vuelve a cero), se limpia la serie y empieza un nuevo día de prueba. Los datos se guardan en memoria mientras la app siga abierta.",
+                    "El gráfico se actualiza al recibir mensajes. Al detectar que el ESP32 reinició (su tiempo de actividad vuelve a cero), se limpia la serie y empieza un nuevo día de prueba. Señal relativa MQ-2 · simulación, no mide PM2.5.",
                     Modifier.padding(16.dp), fontSize = VigiAireTypeScale.Label, color = TextoOscuro
                 )
             }
@@ -116,18 +153,30 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
 @Composable
 private fun EstadoPill(texto: String) {
-    androidx.compose.foundation.layout.Box(Modifier.background(AzulClaro, RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 5.dp)) {
+    Box(Modifier.background(AzulClaro, RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 4.dp)) {
         Text(texto, fontSize = VigiAireTypeScale.Caption, fontWeight = FontWeight.Bold, color = AzulPrimario)
     }
 }
 
 @Composable
-private fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
-    Card(modifier, shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
-        Column(Modifier.fillMaxWidth().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, fontSize = VigiAireTypeScale.Caption, color = TextoGris)
-            Text(value, fontSize = VigiAireTypeScale.Heading, fontWeight = FontWeight.Bold, color = TextoOscuro)
-            Text("ADC", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+private fun StatCard(title: String, value: String, modifier: Modifier = Modifier, isMax: Boolean = false) {
+    Card(
+        modifier = modifier.then(if (isMax) Modifier.border(2.dp, RojoAlerta.copy(alpha = 0.6f), RoundedCornerShape(14.dp)) else Modifier),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isMax) Color(0xFFFFE8E8) else Blanco)
+    ) {
+        Column(Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(title, fontSize = 11.sp, color = if (isMax) RojoAlerta else TextoGris, fontWeight = if (isMax) FontWeight.Bold else FontWeight.Normal)
+                if (isMax) {
+                    Box(Modifier.background(RojoAlerta, RoundedCornerShape(4.dp)).padding(horizontal = 4.dp, vertical = 1.dp)) {
+                        Text("Pico", fontSize = 9.sp, color = Blanco, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(value, fontSize = if (isMax) 20.sp else 14.sp, fontWeight = FontWeight.Bold, color = if (isMax) RojoAlerta else TextoOscuro)
+            Text("ADC", fontSize = 9.sp, color = TextoGris)
         }
     }
 }
