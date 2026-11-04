@@ -83,9 +83,9 @@ fun RecomendacionScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                         Text("  ¿Cómo interpretar el estado?", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
                     }
                     val desc = when (live?.estado) {
-                        com.tecsup.vigiaire.data.model.EstadoSensor.VENTILE -> "El firmware ubicó la señal analógica por debajo del umbral bajo configurado y envió VENTILE."
-                        com.tecsup.vigiaire.data.model.EstadoSensor.ESPERE -> "El firmware ubicó la señal analógica por encima del umbral bajo y envió ESPERE."
-                        com.tecsup.vigiaire.data.model.EstadoSensor.ALERTA -> "La entrada digital del sensor activó la condición de alerta y el firmware envió ALERTA."
+                        com.tecsup.vigiaire.data.model.EstadoSensor.VENTILE -> "La lectura ADC simulada quedó por debajo del umbral bajo y el firmware envió VENTILE."
+                        com.tecsup.vigiaire.data.model.EstadoSensor.ESPERE -> "La lectura ADC simulada superó el umbral bajo y el firmware envió ESPERE."
+                        com.tecsup.vigiaire.data.model.EstadoSensor.ALERTA -> "La lectura ADC simulada alcanzó el umbral alto configurado y el firmware envió ALERTA."
                         else -> if (connection == MqttConnectionState.CONNECTED) "Esperando el siguiente mensaje del sensor…" else "Sin una lectura vigente. Revisa la conexión MQTT y deja Wokwi en ejecución."
                     }
                     Text(desc, fontSize = VigiAireTypeScale.Label, color = TextoGris)
