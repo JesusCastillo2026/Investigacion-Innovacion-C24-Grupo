@@ -72,7 +72,7 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(3.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },
@@ -93,7 +93,7 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             EstadoPill(if (live != null) "EN VIVO" else "SIN SEÑAL")
                             if (live != null) {
@@ -107,7 +107,7 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = live?.let { "${it.gasAdc}" } ?: "—",
-                            fontSize = 32.sp,
+                            fontSize = VigiAireTypeScale.Display,
                             fontWeight = FontWeight.Bold,
                             color = AzulPrimario
                         )

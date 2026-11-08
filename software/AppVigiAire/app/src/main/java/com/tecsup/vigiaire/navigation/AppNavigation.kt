@@ -137,6 +137,8 @@ fun AppNavigation(
             )
         }
 
+        composable("informacion") { com.tecsup.vigiaire.ui.screens.informacion.InformacionScreen(onVolver = { navController.popBackStack() }) }
+
         // 8. Perfil de Usuario
         composable(Pantalla.Perfil.ruta) {
             PerfilScreen(

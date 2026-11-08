@@ -86,7 +86,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(3.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },

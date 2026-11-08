@@ -62,11 +62,11 @@ fun DetalleScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Detalle en vivo", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Text("Señal que publica el ESP32 simulado", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        Text("La lectura actual y sus valores destacados", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(3.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },

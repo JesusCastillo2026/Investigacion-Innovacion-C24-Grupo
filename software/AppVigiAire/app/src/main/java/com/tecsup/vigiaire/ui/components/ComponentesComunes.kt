@@ -278,7 +278,7 @@ fun MetricCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
+            .shadow(1.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Blanco)
     ) {
@@ -356,7 +356,7 @@ fun RecommendationCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
+            .shadow(1.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = estadoActual.colorFondo)
     ) {
@@ -423,7 +423,7 @@ fun BarChartWidget(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp)),
+            .shadow(1.dp, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Blanco)
     ) {
@@ -579,7 +579,7 @@ fun TarjetaRangosEstado(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(16.dp)),
+            .shadow(1.dp, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Blanco)
     ) {
@@ -602,18 +602,18 @@ fun TarjetaRangosEstado(modifier: Modifier = Modifier) {
 
             EstadoRangoRow(
                 estado = EstadoSensor.VENTILE,
-                rango = "0 - 1500 ADC",
-                descripcion = "Aire limpio / Umbral bajo"
+                rango = "0 – 2100 ADC",
+                descripcion = "Señal simulada baja"
             )
             EstadoRangoRow(
                 estado = EstadoSensor.ESPERE,
-                rango = "1501 - 3000 ADC",
+                rango = "2101 – 3099 ADC",
                 descripcion = "Precaución / Esperar"
             )
             EstadoRangoRow(
                 estado = EstadoSensor.ALERTA,
-                rango = "3001 - 4095 ADC",
-                descripcion = "Alerta digital activada"
+                rango = "3100 – 4095 ADC",
+                descripcion = "Señal simulada alta"
             )
         }
     }
@@ -661,4 +661,3 @@ private fun EstadoRangoRow(
         }
     }
 }
-

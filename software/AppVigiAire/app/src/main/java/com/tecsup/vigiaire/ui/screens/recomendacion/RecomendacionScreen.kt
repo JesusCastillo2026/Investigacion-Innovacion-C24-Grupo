@@ -57,12 +57,12 @@ fun RecomendacionScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             CenterAlignedTopAppBar(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Consejo del circuito", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                        Text("Basado en el último estado MQTT", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        Text("Tu orientación", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                        Text("Comprende el estado de tu simulación", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(3.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },
@@ -72,7 +72,7 @@ fun RecomendacionScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text("Indicador que envió Wokwi", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
+            Text("Estado actual", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
             TrafficLightWidget(estadoActivo = live?.estado)
             RecommendationCard(live?.estado)
 

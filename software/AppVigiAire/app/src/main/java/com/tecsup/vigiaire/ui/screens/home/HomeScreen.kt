@@ -102,6 +102,7 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                             Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = TextoOscuro)
                         }
                         DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                            DropdownMenuItem(text = { Text("Información y ayuda") }, onClick = { menuOpen = false; onNavigate("informacion") })
                             DropdownMenuItem(text = { Text("Noticias") }, onClick = { menuOpen = false; onNavigate(Pantalla.Noticias.ruta) })
                             DropdownMenuItem(text = { Text("Tendencia en vivo") }, onClick = { menuOpen = false; onNavigate(Pantalla.Tendencia.ruta) })
                             DropdownMenuItem(text = { Text("Consejo del circuito") }, onClick = { menuOpen = false; onNavigate(Pantalla.Recomendacion.ruta) })
@@ -115,12 +116,12 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                             Icon(Icons.Default.Notifications, contentDescription = "Noticias", tint = TextoOscuro)
                         }
                     }
-                    Box(Modifier.padding(end = 12.dp).size(36.dp).clip(CircleShape).background(AzulClaro), contentAlignment = Alignment.Center) {
+                    Box(Modifier.clickable { onNavigate(Pantalla.Perfil.ruta) }.padding(end = 12.dp).size(48.dp).clip(CircleShape).background(AzulClaro), contentAlignment = Alignment.Center) {
                         Icon(Icons.Default.Person, contentDescription = "Perfil", tint = AzulPrimario)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(2.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = { VigiAireBottomBar(currentRoute, onNavigate) },
@@ -132,16 +133,11 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Hola, ${user?.nombre ?: "Jeremy"}", fontSize = VigiAireTypeScale.Heading, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                Text("Lecturas que llegan en vivo desde Wokwi.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
+                Text("Hola, ${user?.nombre ?: "bienvenido"}", fontSize = VigiAireTypeScale.Heading, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                Text("Tu simulación, en una mirada.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
             }
 
-            Image(
-                painter = painterResource(R.drawable.vigiaire_home_hero),
-                contentDescription = "Módulo VigiAire junto a una ventana",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(168.dp).clip(RoundedCornerShape(22.dp))
-            )
+            com.tecsup.vigiaire.ui.components.AireIllustration()
 
             Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -185,7 +181,7 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
             RecommendationCard(liveReading?.estado)
 
-            TarjetaRangosEstado()
+            Card(Modifier.fillMaxWidth().clickable { onNavigate("informacion") }, colors = CardDefaults.cardColors(containerColor = AzulClaro)) { Column(Modifier.padding(20.dp)) { Text("Entiende tu lectura", style = androidx.compose.material3.MaterialTheme.typography.titleLarge); Text("ADC, estados y preguntas frecuentes →", style = androidx.compose.material3.MaterialTheme.typography.bodyLarge, color = TextoGris) } }
 
             Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
                 Text(

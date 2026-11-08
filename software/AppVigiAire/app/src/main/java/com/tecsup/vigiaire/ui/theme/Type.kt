@@ -21,7 +21,7 @@ val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
+        fontSize = VigiAireTypeScale.Display,
         lineHeight = 44.sp,
         color = TextoOscuro
     ),
@@ -35,7 +35,7 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp,
+        fontSize = VigiAireTypeScale.Section,
         lineHeight = 28.sp,
         color = TextoOscuro
     ),

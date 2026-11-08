@@ -78,7 +78,7 @@ fun DispositivoScreen(
     val stateBackground = if (connected) VerdeSuave else RojoSuave
     val stateText = when (connectionState) {
         MqttConnectionState.CONNECTED -> "Conectado al simulador"
-        MqttConnectionState.CONNECTING -> "Conectando al broker..."
+        MqttConnectionState.CONNECTING -> "Conectando…"
         MqttConnectionState.ERROR -> "No se pudo conectar"
         MqttConnectionState.DISCONNECTED -> "Sin conexión"
     }
@@ -88,12 +88,12 @@ fun DispositivoScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("VigiAire simulado", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                    Text("Señal MQTT del circuito Wokwi", fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        Text("Mi dispositivo", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                    Text("Conecta y revisa tu simulación", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Blanco),
-                modifier = Modifier.shadow(4.dp)
+                modifier = Modifier.shadow(0.dp)
             )
         },
         bottomBar = {
@@ -110,7 +110,7 @@ fun DispositivoScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                modifier = Modifier.fillMaxWidth().shadow(5.dp, RoundedCornerShape(20.dp)),
+                modifier = Modifier.fillMaxWidth().shadow(1.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco)
             ) {
@@ -145,12 +145,12 @@ fun DispositivoScreen(
                             CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Blanco, strokeWidth = 2.dp)
                             Text("  Conectando...", fontWeight = FontWeight.Bold)
                         } else {
-                            Text(if (connected) "Desconectar" else "Conectar MQTT", fontWeight = FontWeight.Bold)
+                            Text(if (connected) "Desconectar" else "Conectar dispositivo", fontWeight = FontWeight.Bold)
                         }
                     }
 
-                    Text("Broker: ${MqttVigiAireClient.BROKER}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                    Text("Tema: ${MqttVigiAireClient.TOPIC}", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                    com.tecsup.vigiaire.ui.components.InfoAccordion("Detalles de conexión", "Servidor: ${MqttVigiAireClient.BROKER}\nCanal: ${MqttVigiAireClient.TOPIC}")
+
                     error?.let { Text("Detalle: $it", fontSize = VigiAireTypeScale.Label, color = RojoAlerta) }
                 }
             }
