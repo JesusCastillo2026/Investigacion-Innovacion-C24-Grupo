@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.dispositivo
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
 
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,6 +29,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -53,6 +57,7 @@ import com.tecsup.vigiaire.ui.theme.TextoGris
 import com.tecsup.vigiaire.ui.theme.TextoOscuro
 import com.tecsup.vigiaire.ui.theme.VerdeExito
 import com.tecsup.vigiaire.ui.theme.VerdeSuave
+import androidx.compose.ui.graphics.Color
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,6 +70,7 @@ fun DispositivoScreen(
 ) {
     val connectionState by MqttVigiAireClient.state.collectAsState()
     val reading by MqttVigiAireClient.latestReading.collectAsState()
+    val extractorEnabled by MqttVigiAireClient.extractorEnabled.collectAsState()
     val error by MqttVigiAireClient.error.collectAsState()
     val connected = connectionState == MqttConnectionState.CONNECTED
     val readingIsFresh = reading != null && connected && System.currentTimeMillis() - reading!!.receivedAt <= MqttVigiAireClient.LIVE_TIMEOUT_MS
@@ -109,7 +115,7 @@ fun DispositivoScreen(
                 .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Card(
+            GlassCard(
                 modifier = Modifier.fillMaxWidth().shadow(1.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco)
@@ -149,13 +155,62 @@ fun DispositivoScreen(
                         }
                     }
 
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = AzulClaro)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Air,
+                                contentDescription = null,
+                                tint = if (extractorEnabled) VerdeExito else AzulPrimario,
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(
+                                    "Iniciar extracción de aire",
+                                    fontSize = VigiAireTypeScale.Body,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextoOscuro
+                                )
+                                Text(
+                                    when {
+                                        !connected -> "Conecta la app con Wokwi para habilitarlo."
+                                        !readingIsFresh -> "Esperando una lectura actual del circuito."
+                                        extractorEnabled -> "Giro simulado activo · toca para detener."
+                                        else -> "Motor detenido · toca para iniciar el giro."
+                                    },
+                                    fontSize = VigiAireTypeScale.Label,
+                                    color = TextoGris
+                                )
+                            }
+                            Switch(
+                                checked = extractorEnabled,
+                                onCheckedChange = MqttVigiAireClient::setExtractorEnabled,
+                                enabled = readingIsFresh,
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = VerdeExito,
+                                    uncheckedThumbColor = Blanco,
+                                    uncheckedTrackColor = AzulClaro,
+                                    uncheckedBorderColor = AzulPrimario
+                                )
+                            )
+                        }
+                    }
+
                     com.tecsup.vigiaire.ui.components.InfoAccordion("Detalles de conexión", "Servidor: ${MqttVigiAireClient.BROKER}\nCanal: ${MqttVigiAireClient.TOPIC}")
 
                     error?.let { Text("Detalle: $it", fontSize = VigiAireTypeScale.Label, color = RojoAlerta) }
                 }
             }
 
-            Card(
+            GlassCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco)
@@ -180,7 +235,7 @@ fun DispositivoScreen(
                 }
             }
 
-            Card(
+            GlassCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = AzulClaro)

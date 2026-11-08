@@ -190,12 +190,12 @@ fun TrafficLightWidget(
     estadoActivo: EstadoSensor?,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(6.dp, RoundedCornerShape(18.dp)),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+        colors = CardDefaults.cardColors(containerColor = AzulClaro)
     ) {
         Row(
             modifier = Modifier
@@ -248,7 +248,7 @@ private fun TrafficLightCircle(
                 .background(if (isActivo) color else color.copy(alpha = 0.25f))
                 .border(
                     width = if (isActivo) 3.dp else 1.dp,
-                    color = if (isActivo) Blanco else Color.Transparent,
+                    color = if (isActivo) TextoOscuro else Color.Transparent,
                     shape = CircleShape
                 )
         )
@@ -257,7 +257,7 @@ private fun TrafficLightCircle(
             text = label,
             fontSize = VigiAireTypeScale.Caption,
             fontWeight = if (isActivo) FontWeight.Bold else FontWeight.Normal,
-            color = if (isActivo) Blanco else Color(0xFF94A3B8)
+            color = TextoOscuro
         )
     }
 }
@@ -275,7 +275,7 @@ fun MetricCard(
     iconBgColor: Color,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(1.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
@@ -353,12 +353,12 @@ fun RecommendationCard(
     }
     val mensaje = estadoActual.recomendacion
 
-    Card(
+    GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(1.dp, RoundedCornerShape(16.dp), spotColor = Color(0x10000000)),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = estadoActual.colorFondo)
+        colors = CardDefaults.cardColors(containerColor = Blanco)
     ) {
         Row(
             modifier = Modifier
@@ -377,7 +377,7 @@ fun RecommendationCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = "Recomendación",
-                    tint = estadoActual.color,
+                    tint = AzulPrimario,
                     modifier = Modifier.size(26.dp)
                 )
             }
@@ -391,7 +391,7 @@ fun RecommendationCard(
                     text = "Consejo del circuito",
                     fontSize = VigiAireTypeScale.Label,
                     fontWeight = FontWeight.Bold,
-                    color = estadoActual.color
+                    color = AzulPrimario
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -420,7 +420,7 @@ fun BarChartWidget(
         (0..4).map { it * datos.lastIndex / 4 }
     }
 
-    Card(
+    GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(1.dp, RoundedCornerShape(16.dp)),
@@ -576,7 +576,7 @@ fun VigiAireBottomBar(
  */
 @Composable
 fun TarjetaRangosEstado(modifier: Modifier = Modifier) {
-    Card(
+    GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(1.dp, RoundedCornerShape(16.dp)),
@@ -630,7 +630,7 @@ private fun EstadoRangoRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(estado.colorFondo)
-            .border(1.dp, estado.color.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+            .border(1.dp, estado.color.copy(alpha = 0.65f), RoundedCornerShape(12.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -661,3 +661,4 @@ private fun EstadoRangoRow(
         }
     }
 }
+

@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.sp
 
 /** Escala tipográfica compartida para mantener legibles y consistentes todas las pantallas. */
 object VigiAireTypeScale {
-    val Caption = 12.sp
-    val Label = 14.sp
+    val Caption = 14.sp
+    val Label = 16.sp
     val Body = 16.sp
     val Section = 18.sp
     val Heading = 24.sp
@@ -17,7 +17,7 @@ object VigiAireTypeScale {
     val Metric = 36.sp
 }
 
-val Typography = Typography(
+val Typography get() = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
@@ -56,21 +56,22 @@ val Typography = Typography(
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         lineHeight = 20.sp,
         color = TextoGris
     ),
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         lineHeight = 20.sp
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
+        fontSize = 14.sp,
         lineHeight = 18.sp,
         color = TextoGris
     )
 )
+

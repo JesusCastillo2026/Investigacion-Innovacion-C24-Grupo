@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.noticias
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,7 +98,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 .padding(horizontal = 18.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
+            GlassCard(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Air, contentDescription = null, tint = AzulPrimario, modifier = Modifier.size(28.dp))
                     Column(Modifier.padding(start = 12.dp)) {
@@ -118,7 +119,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 ResumenDato("Máxima", max?.gasAdc?.toString() ?: "—", "ADC", Modifier.weight(1f))
             }
 
-            Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+            GlassCard(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Router, contentDescription = null, tint = if (connection == MqttConnectionState.CONNECTED) Color(0xFF138A55) else TextoGris)
@@ -136,7 +137,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
             Text("Actividad de esta sesión", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
             if (news.isEmpty()) {
-                Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+                GlassCard(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Icon(Icons.Default.Notifications, contentDescription = null, tint = AzulPrimario)
                         Text("Aún no hay novedades", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
@@ -145,7 +146,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 }
             } else {
                 news.forEach { item ->
-                    Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+                    GlassCard(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.Top) {
                             Box(Modifier.padding(top = 4.dp).size(10.dp).clip(CircleShape).background(item.color))
                             Column(Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -167,7 +168,7 @@ fun NoticiasScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
 @Composable
 private fun ResumenDato(titulo: String, valor: String, unidad: String, modifier: Modifier = Modifier) {
-    Card(modifier, shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+    GlassCard(modifier, shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
         Column(Modifier.fillMaxWidth().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(titulo, fontSize = VigiAireTypeScale.Caption, color = TextoGris)
             Text(valor, fontSize = VigiAireTypeScale.Heading, fontWeight = FontWeight.Bold, color = TextoOscuro)

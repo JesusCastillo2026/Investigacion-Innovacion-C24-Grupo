@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.home
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Router
+import androidx.compose.material3.*
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -84,7 +88,8 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
     val readingCount by MqttVigiAireClient.sessionReadingCount.collectAsState()
     val minimumReading by MqttVigiAireClient.sessionMinimum.collectAsState()
     val maximumReading by MqttVigiAireClient.sessionMaximum.collectAsState()
-    var menuOpen by remember { mutableStateOf(false) }
+    val drawer = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
     val liveReading = latest?.takeIf {
         connection == MqttConnectionState.CONNECTED &&
@@ -92,28 +97,33 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
     }
     val fecha = remember { SimpleDateFormat("EEEE d 'de' MMMM", Locale("es", "PE")).format(Date()) }
 
+    ModalNavigationDrawer(drawerState=drawer, drawerContent={
+        ModalDrawerSheet(modifier=Modifier.fillMaxWidth(0.7f), drawerContainerColor=Blanco) {
+            Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color(0xFF12516B), Color(0xFF197C86)))).padding(24.dp)) {
+                Text("VigiAire", style=MaterialTheme.typography.headlineMedium, color=Color.White)
+                Text("Tu espacio conectado", color=Color(0xFFD5F4F7))
+            }
+            listOf("Información y ayuda" to "informacion", "Notificaciones" to "notificaciones", "Noticias" to Pantalla.Noticias.ruta, "Tendencia" to Pantalla.Tendencia.ruta, "Mi equipo" to Pantalla.Dispositivo.ruta).forEach { (label, route) ->
+                NavigationDrawerItem(label={Text(label,color=TextoOscuro)}, selected=false, onClick={scope.launch { drawer.close() }; onNavigate(route)}, modifier=Modifier.padding(horizontal=12.dp,vertical=4.dp))
+            }
+        }
+    }) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("VIGIAIRE", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro) },
                 navigationIcon = {
                     Box {
-                        IconButton(onClick = { menuOpen = true }) {
+                        IconButton(onClick = { scope.launch { drawer.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Abrir menú", tint = TextoOscuro)
                         }
-                        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                            DropdownMenuItem(text = { Text("Información y ayuda") }, onClick = { menuOpen = false; onNavigate("informacion") })
-                            DropdownMenuItem(text = { Text("Noticias") }, onClick = { menuOpen = false; onNavigate(Pantalla.Noticias.ruta) })
-                            DropdownMenuItem(text = { Text("Tendencia en vivo") }, onClick = { menuOpen = false; onNavigate(Pantalla.Tendencia.ruta) })
-                            DropdownMenuItem(text = { Text("Consejo del circuito") }, onClick = { menuOpen = false; onNavigate(Pantalla.Recomendacion.ruta) })
-                            DropdownMenuItem(text = { Text("Conexión del equipo") }, onClick = { menuOpen = false; onNavigate(Pantalla.Dispositivo.ruta) })
-                        }
+
                     }
                 },
                 actions = {
                     BadgedBox(badge = { if (connection == MqttConnectionState.CONNECTED) Badge(containerColor = Color(0xFF138A55)) {} }) {
-                        IconButton(onClick = { onNavigate(Pantalla.Noticias.ruta) }) {
-                            Icon(Icons.Default.Notifications, contentDescription = "Noticias", tint = TextoOscuro)
+                        IconButton(onClick = { onNavigate("notificaciones") }) {
+                            Icon(Icons.Default.Notifications, contentDescription = "Notificaciones", tint = TextoOscuro)
                         }
                     }
                     Box(Modifier.clickable { onNavigate(Pantalla.Perfil.ruta) }.padding(end = 12.dp).size(48.dp).clip(CircleShape).background(AzulClaro), contentAlignment = Alignment.Center) {
@@ -137,9 +147,9 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 Text("Tu simulación, en una mirada.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
             }
 
-            com.tecsup.vigiaire.ui.components.AireIllustration()
+            
 
-            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+            GlassCard(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Señal en vivo", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
@@ -159,59 +169,25 @@ fun HomeScreen(currentRoute: String, onNavigate: (String) -> Unit) {
 
             DatoDelDiaCard()
 
-            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Router, contentDescription = null, tint = AzulPrimario)
-                        Column(Modifier.padding(start = 10.dp)) {
-                            Text("Resumen de hoy", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                            Text("Día de prueba $sessionNumber · $fecha", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                        }
-                    }
-                    Text("Inicio de sesión: ${startedAt?.let(::formatTime) ?: "esperando la primera lectura"}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                    if (liveReading != null) {
-                        Text("A las ${formatTime(liveReading.receivedAt)}: ${liveReading.gasAdc} ADC y estado ${liveReading.status}.", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
+            GlassCard(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+                Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Text("Resumen de hoy", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = TextoOscuro)
+                    Text("Día de prueba $sessionNumber", fontSize = VigiAireTypeScale.Body, color = TextoGris)
+                    if (readingCount == 0L) {
+                        Text("El resumen aparecerá al recibir la primera lectura.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
                     } else {
-                        Text("No hay una lectura vigente. El resumen aparecerá al recibir datos del circuito.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
-                    }
-                    Text("Lecturas: $readingCount  ·  mínima: ${minimumReading?.gasAdc ?: "—"} ADC  ·  máxima: ${maximumReading?.gasAdc ?: "—"} ADC", fontSize = VigiAireTypeScale.Label, color = TextoGris)
-                    Text("Al reiniciar el ESP32, la app detecta el reinicio y comienza un nuevo día de prueba.", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
-                }
-            }
-
-            RecommendationCard(liveReading?.estado)
-
-            Card(Modifier.fillMaxWidth().clickable { onNavigate("informacion") }, colors = CardDefaults.cardColors(containerColor = AzulClaro)) { Column(Modifier.padding(20.dp)) { Text("Entiende tu lectura", style = androidx.compose.material3.MaterialTheme.typography.titleLarge); Text("ADC, estados y preguntas frecuentes →", style = androidx.compose.material3.MaterialTheme.typography.bodyLarge, color = TextoGris) } }
-
-            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
-                Text(
-                    "Nota: Las lecturas y recomendaciones son simuladas por el circuito MQ-2. No constituyen mediciones oficiales ni miden PM2.5.",
-                    Modifier.padding(16.dp),
-                    fontSize = VigiAireTypeScale.Label,
-                    color = TextoOscuro
-                )
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth().clickable { onNavigate(Pantalla.Dispositivo.ruta) },
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Blanco)
-            ) {
-                Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(42.dp).clip(CircleShape).background(if (connection == MqttConnectionState.CONNECTED) Color(0xFFE4F5EC) else Color(0xFFFFE8E8)), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Router, contentDescription = null, tint = if (connection == MqttConnectionState.CONNECTED) Color(0xFF138A55) else Color(0xFFCE3434))
-                        }
-                        Column(Modifier.padding(start = 12.dp)) {
-                            Text("Equipo", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
-                            Text(connection.label(), fontSize = VigiAireTypeScale.Label, color = TextoGris)
+                        listOf("Lecturas recibidas" to "$readingCount", "Mínimo" to "${minimumReading?.gasAdc ?: "—"} ADC", "Máximo" to "${maximumReading?.gasAdc ?: "—"} ADC").forEach { (label, value) ->
+                            Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(AzulClaro.copy(alpha=0.6f)).padding(14.dp), horizontalArrangement=Arrangement.SpaceBetween) {
+                                Text(label, Modifier.weight(1f), fontSize=VigiAireTypeScale.Body, color=TextoGris)
+                                Text(value, fontSize=VigiAireTypeScale.Body, fontWeight=FontWeight.SemiBold, color=TextoOscuro)
+                            }
                         }
                     }
-                    Text("Ver", fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = AzulPrimario)
                 }
             }
         }
     }
+}
 }
 
 private data class DatoInformativo(val titulo: String, val texto: String)
@@ -228,7 +204,7 @@ private val datosInformativos = listOf(
 @Composable
 private fun DatoDelDiaCard() {
     val dato = remember { datosInformativos.random() }
-    Card(
+    GlassCard(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = AzulClaro)
     ) {
@@ -239,12 +215,12 @@ private fun DatoDelDiaCard() {
             Icon(Icons.Default.Air, contentDescription = null, tint = AzulPrimario)
             Column(
                 Modifier.padding(start = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text("Dato del día", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = AzulOscuro)
                 Text(dato.titulo, fontSize = VigiAireTypeScale.Label, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
                 Text(dato.texto, fontSize = VigiAireTypeScale.Label, color = TextoOscuro)
-                Text("Dato informativo · no corresponde a una medición del circuito", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
+                
             }
         }
     }
@@ -265,3 +241,4 @@ private fun MqttConnectionState.label(): String = when (this) {
 }
 
 private fun formatTime(timestamp: Long): String = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
+

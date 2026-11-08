@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.tendencia
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.FilterChip
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,7 +64,8 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
     val minimumReading by MqttVigiAireClient.sessionMinimum.collectAsState()
     val maximumReading by MqttVigiAireClient.sessionMaximum.collectAsState()
     val sessionAverage by MqttVigiAireClient.sessionAverage.collectAsState()
-    val points = history.takeLast(24)
+    var ventana by remember { mutableIntStateOf(24) }
+    val points = if (ventana == 0) history else history.takeLast(ventana)
     val live = latest?.takeIf { connection == MqttConnectionState.CONNECTED && System.currentTimeMillis() - it.receivedAt <= MqttVigiAireClient.LIVE_TIMEOUT_MS }
 
     Scaffold(
@@ -83,7 +89,7 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             // EN VIVO prominent header with current ADC value
-            Card(
+            GlassCard(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco),
                 modifier = Modifier.fillMaxWidth().shadow(4.dp, RoundedCornerShape(16.dp))
@@ -116,10 +122,13 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 }
             }
 
-            Text("Señal · últimas ${points.size} de $readingCount", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(10 to "10", 24 to "24", 0 to "Todo").forEach { (n, label) -> FilterChip(selected=ventana==n,onClick={ventana=n},label={Text(label)}) }
+            }
+            Text("Señal · ${if(ventana==0) "todas" else "últimas ${points.size}"} de $readingCount", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.Bold, color = TextoOscuro)
             BarChartWidget(datos = points)
 
-            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+            GlassCard(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = AzulPrimario)
                     Column(Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -140,7 +149,7 @@ fun TendenciaScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 StatCard("Promedio", sessionAverage?.toString() ?: "—", Modifier.weight(1f), isMax = false)
                 StatCard("Máximo", maximumReading?.gasAdc?.toString() ?: "—", Modifier.weight(1.1f), isMax = true)
             }
-            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
+            GlassCard(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
                 Text(
                     "El gráfico se actualiza al recibir mensajes. Al detectar que el ESP32 reinició (su tiempo de actividad vuelve a cero), se limpia la serie y empieza un nuevo día de prueba. Señal relativa MQ-2 · simulación, no mide PM2.5.",
                     Modifier.padding(16.dp), fontSize = VigiAireTypeScale.Label, color = TextoOscuro
@@ -160,10 +169,10 @@ private fun EstadoPill(texto: String) {
 
 @Composable
 private fun StatCard(title: String, value: String, modifier: Modifier = Modifier, isMax: Boolean = false) {
-    Card(
-        modifier = modifier.then(if (isMax) Modifier.border(2.dp, RojoAlerta.copy(alpha = 0.6f), RoundedCornerShape(14.dp)) else Modifier),
+    GlassCard(
+        modifier = modifier.border(2.dp, (if (isMax) RojoAlerta else if (title == "Mínimo") com.tecsup.vigiaire.ui.theme.VerdeExito else com.tecsup.vigiaire.ui.theme.AmarilloAlerta).copy(alpha=0.6f), RoundedCornerShape(14.dp)),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isMax) Color(0xFFFFE8E8) else Blanco)
+        colors = CardDefaults.cardColors(containerColor = if (isMax) com.tecsup.vigiaire.ui.theme.RojoSuave else if (title == "Mínimo") com.tecsup.vigiaire.ui.theme.VerdeSuave else com.tecsup.vigiaire.ui.theme.AmarilloSuave)
     ) {
         Column(Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {

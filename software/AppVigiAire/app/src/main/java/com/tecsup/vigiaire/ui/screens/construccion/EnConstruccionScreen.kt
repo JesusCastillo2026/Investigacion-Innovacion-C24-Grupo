@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.construccion
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
 
 import androidx.compose.foundation.background
@@ -83,7 +84,7 @@ fun EnConstruccionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Card(
+            GlassCard(
                 modifier = Modifier.shadow(8.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Blanco)

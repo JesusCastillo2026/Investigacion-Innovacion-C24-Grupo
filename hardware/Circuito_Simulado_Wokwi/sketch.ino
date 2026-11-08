@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include <PubSubClient.h>
 #include <LiquidCrystal_I2C.h>
-#include <ESP32Servo.h>
 #include <cstring>
 #include <cstdio>
 
@@ -12,18 +11,20 @@ constexpr int GAS_DIGITAL = 32;
 constexpr int LED_GREEN = 25;
 constexpr int LED_AMBER = 26;
 constexpr int LED_RED = 27;
-constexpr int EXTRACTOR_SERVO = 18;
+constexpr int EXTRACTOR_STEP = 18;
+constexpr int EXTRACTOR_DIR = 19;
+constexpr int EXTRACTOR_ENABLE = 23;
 constexpr int GOOD_MAX = 2100;
 constexpr int ALERT_MIN = 3100;
 constexpr unsigned long PUBLISH_INTERVAL_MS = 1000;
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-Servo extractorFlap;
 const char* WIFI_SSID = "Wokwi-GUEST";
 const char* WIFI_PASSWORD = "";
 const char* MQTT_HOST = "broker.hivemq.com";
 constexpr uint16_t MQTT_PORT = 1883;
 const char* MQTT_TOPIC = "vigiaire/c24d/grupo4/9f3c7d8b/telemetry";
+const char* MQTT_COMMAND_TOPIC = "vigiaire/c24d/grupo4/9f3c7d8b/command";
 
 WiFiClient networkClient;
 PubSubClient mqtt(networkClient);
@@ -32,10 +33,40 @@ unsigned long sequenceNumber = 0;
 unsigned long nextScenarioAt = 0;
 int simulatedAdc = 1200;
 int targetAdc = 1350;
+bool extractorRequested = false;
+unsigned long lastExtractorStepUs = 0;
 
 const char* stateFor(int value) {
   if (value >= ALERT_MIN) return "ALERTA";
   return value <= GOOD_MAX ? "VENTILE" : "ESPERE";
+}
+
+// Wokwi stepper + A4988 representation: app command enables a continuous
+// one-direction rotation; no real airflow or extraction is simulated.
+void updateExtractorAnimation() {
+  if (!extractorRequested) {
+    digitalWrite(EXTRACTOR_ENABLE, HIGH); // A4988 ENABLE is active LOW
+    return;
+  }
+  digitalWrite(EXTRACTOR_ENABLE, LOW);
+  const unsigned long nowUs = micros();
+  if (nowUs - lastExtractorStepUs < 1200) return;
+  lastExtractorStepUs = nowUs;
+  digitalWrite(EXTRACTOR_STEP, HIGH);
+  delayMicroseconds(3);
+  digitalWrite(EXTRACTOR_STEP, LOW);
+}
+
+void onMqttMessage(char* topic, byte* payload, unsigned int length) {
+  if (strcmp(topic, MQTT_COMMAND_TOPIC) != 0) return;
+  String body;
+  body.reserve(length);
+  for (unsigned int i = 0; i < length; i++) body += static_cast<char>(payload[i]);
+  if (body.indexOf("\"command\":\"extractor\"") < 0) return;
+
+  extractorRequested = body.indexOf("\"enabled\":true") >= 0;
+  Serial.println(extractorRequested ? "Motor paso a paso activado desde la app."
+                                    : "Motor paso a paso detenido desde la app.");
 }
 
 // Automatic demonstration: 78% low, 19% intermediate, 3% alert targets.
@@ -62,11 +93,6 @@ void showState(int value, const char* state) {
   digitalWrite(LED_GREEN, good ? HIGH : LOW);
   digitalWrite(LED_AMBER, wait ? HIGH : LOW);
   digitalWrite(LED_RED, (!good && !wait) ? HIGH : LOW);
-  // Visual actuator only: opens a vent flap to represent the extractor command.
-  // Wokwi does not model airflow or suction.
-  const bool extractorOn = strcmp(state, "ALERTA") == 0;
-  extractorFlap.write(extractorOn ? 90 : 0);
-
   char line1[17];
   char line2[17];
   snprintf(line1, sizeof(line1), "SIM:  %4d ADC", value);
@@ -93,7 +119,14 @@ void reconnectMqtt() {
   if (WiFi.status() != WL_CONNECTED || mqtt.connected()) return;
   const String clientId = "VigiAire-Wokwi-" + String((uint32_t)ESP.getEfuseMac(), HEX);
   Serial.print("Conectando al broker MQTT... ");
-  if (mqtt.connect(clientId.c_str())) Serial.println("conectado");
+  if (mqtt.connect(clientId.c_str())) {
+    Serial.println("conectado");
+    if (mqtt.subscribe(MQTT_COMMAND_TOPIC, 0)) {
+      Serial.println("Escuchando control del motor desde la app.");
+    } else {
+      Serial.println("No se pudo suscribir al canal de comandos.");
+    }
+  }
   else {
     Serial.print("fallo MQTT ");
     Serial.println(mqtt.state());
@@ -101,10 +134,10 @@ void reconnectMqtt() {
 }
 
 void publishReading(int value, const char* state) {
-  char payload[180];
+  char payload[220];
   snprintf(payload, sizeof(payload),
-           R"json({"device":"VigiAire-ESP32","sensor":"MQ-2","simulated":true,"gasAdc":%d,"status":"%s","seq":%lu,"uptimeMs":%lu})json",
-           value, state, ++sequenceNumber, millis());
+           R"json({"device":"VigiAire-ESP32","sensor":"MQ-2","simulated":true,"gasAdc":%d,"status":"%s","extractorEnabled":%s,"seq":%lu,"uptimeMs":%lu})json",
+           value, state, extractorRequested ? "true" : "false", ++sequenceNumber, millis());
   Serial.println(mqtt.publish(MQTT_TOPIC, payload, false)
       ? "MQTT publicado correctamente."
       : "No se pudo publicar en MQTT.");
@@ -115,6 +148,12 @@ void setup() {
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_AMBER, OUTPUT);
   pinMode(LED_RED, OUTPUT);
+  pinMode(EXTRACTOR_STEP, OUTPUT);
+  pinMode(EXTRACTOR_DIR, OUTPUT);
+  pinMode(EXTRACTOR_ENABLE, OUTPUT);
+  digitalWrite(EXTRACTOR_STEP, LOW);
+  digitalWrite(EXTRACTOR_DIR, LOW); // sentido fijo
+  digitalWrite(EXTRACTOR_ENABLE, HIGH); // motor detenido al iniciar
   pinMode(GAS_DIGITAL, INPUT_PULLUP);
   analogReadResolution(12);
   randomSeed((uint32_t)analogRead(GAS_INPUT) ^ micros());
@@ -128,13 +167,10 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("Iniciando...");
 
-  extractorFlap.setPeriodHertz(50);
-  extractorFlap.attach(EXTRACTOR_SERVO, 500, 2400);
-  extractorFlap.write(0);
-
   WiFi.mode(WIFI_STA);
   connectWiFi();
   mqtt.setServer(MQTT_HOST, MQTT_PORT);
+  mqtt.setCallback(onMqttMessage);
   mqtt.setBufferSize(256);
 }
 
@@ -142,6 +178,7 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) connectWiFi();
   if (!mqtt.connected()) reconnectMqtt();
   mqtt.loop();
+  updateExtractorAnimation();
 
   if (millis() - lastPublish >= PUBLISH_INTERVAL_MS) {
     lastPublish = millis();
@@ -155,5 +192,5 @@ void loop() {
     else Serial.println("Lectura local disponible; esperando conexión MQTT.");
   }
 
-  delay(20);
+  delay(1);
 }

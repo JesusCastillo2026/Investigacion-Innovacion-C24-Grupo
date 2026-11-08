@@ -1,253 +1,38 @@
 package com.tecsup.vigiaire.ui.screens.perfil
-
-import com.tecsup.vigiaire.ui.theme.VigiAireTypeScale
-
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.tecsup.vigiaire.ui.theme.*
 import com.tecsup.vigiaire.data.repository.Repositorio
-import com.tecsup.vigiaire.ui.theme.AzulClaro
-import com.tecsup.vigiaire.ui.theme.AzulOscuro
-import com.tecsup.vigiaire.ui.theme.AzulPrimario
-import com.tecsup.vigiaire.ui.theme.Blanco
-import com.tecsup.vigiaire.ui.theme.FondoGris
-import com.tecsup.vigiaire.ui.theme.RojoAlerta
-import com.tecsup.vigiaire.ui.theme.RojoSuave
-import com.tecsup.vigiaire.ui.theme.TextoGris
-import com.tecsup.vigiaire.ui.theme.TextoOscuro
-
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PerfilScreen(
-    onVolver: () -> Unit,
-    onCerrarSesion: () -> Unit
-) {
-    val usuario by Repositorio.usuarioActual.collectAsState()
-
-    val nombreUsuario = usuario?.nombre ?: "Jeremy"
-    val emailUsuario = usuario?.email ?: "demo@vigiaire.com"
-    val iniciales = nombreUsuario.take(1).uppercase()
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Mi Perfil",
-                        fontSize = VigiAireTypeScale.Section,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoOscuro
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = TextoOscuro
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Blanco
-                ),
-                modifier = Modifier.shadow(4.dp)
-            )
-        },
-        containerColor = FondoGris
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Avatar Circular Grande con Iniciales
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .shadow(12.dp, CircleShape, spotColor = AzulPrimario)
-                    .clip(CircleShape)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(AzulPrimario, AzulOscuro)
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = iniciales,
-                    fontSize = VigiAireTypeScale.Metric,
-                    fontWeight = FontWeight.Bold,
-                    color = Blanco
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Nombre y Correo
-            Text(
-                text = nombreUsuario,
-                fontSize = VigiAireTypeScale.Heading,
-                fontWeight = FontWeight.Bold,
-                color = TextoOscuro
-            )
-
-            Text(
-                text = emailUsuario,
-                fontSize = VigiAireTypeScale.Body,
-                color = TextoGris
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Tarjeta de Información Académica TECSUP
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(4.dp, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Blanco)
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Text(
-                        text = "Información del Proyecto",
-                        fontSize = VigiAireTypeScale.Body,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoOscuro
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(vertical = 6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(CircleShape)
-                                .background(AzulClaro),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.School,
-                                contentDescription = "TECSUP",
-                                tint = AzulPrimario,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(text = "Institución", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
-                            Text(text = "TECSUP • Proyecto Innovación", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(vertical = 6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(CircleShape)
-                                .background(AzulClaro),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Badge,
-                                contentDescription = "Entrega",
-                                tint = AzulPrimario,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(text = "Hito de Evaluación", fontSize = VigiAireTypeScale.Caption, color = TextoGris)
-                            Text(text = "Semana 08 • Gemelo Digital VigiAire", fontSize = VigiAireTypeScale.Body, fontWeight = FontWeight.SemiBold, color = TextoOscuro)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // Botón "Cerrar sesión" rojo suave
-            Button(
-                onClick = {
-                    Repositorio.cerrarSesion()
-                    onCerrarSesion()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = RojoSuave,
-                    contentColor = RojoAlerta
-                ),
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                    contentDescription = "Cerrar sesión",
-                    tint = RojoAlerta
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Cerrar sesión",
-                    fontSize = VigiAireTypeScale.Body,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
+@Composable fun PerfilScreen(onVolver:()->Unit,onCerrarSesion:()->Unit) {
+ Scaffold(containerColor=FondoGris,topBar={TopAppBar(title={Text("Mi perfil")},navigationIcon={TextButton(onClick=onVolver){Text("Volver")}})}) { insets ->
+ Column(Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(24.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(20.dp)) {
+ Box(Modifier.size(100.dp).background(Brush.linearGradient(listOf(Color(0xFF166B97),Color(0xFF168875))),CircleShape),contentAlignment=Alignment.Center) { Text("JC",style=MaterialTheme.typography.displayLarge,color=Color.White) }
+ Text("Jeremy Cervantes",style=MaterialTheme.typography.headlineMedium)
+ Text("Perfil de demostración",color=TextoGris)
+ GlassCard(colors=CardDefaults.cardColors(containerColor=Blanco)) { Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+ Text("Información personal",style=MaterialTheme.typography.titleMedium)
+ Text("Correo de ejemplo: jeremy.cervantes@example.com",color=TextoOscuro)
+ Text("Alias: Jeremy Aire",color=TextoOscuro)
+ Text("Espacio favorito: Mi hogar",color=TextoOscuro)
+ Text("Los datos adicionales son ficticios y no cambian las credenciales de acceso.",style=MaterialTheme.typography.bodySmall,color=TextoGris)
+ } }
+ GlassCard(colors=CardDefaults.cardColors(containerColor=AzulClaro)) { Row(Modifier.fillMaxWidth().padding(20.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) { Column(Modifier.weight(1f)) { Text("Modo noche",style=MaterialTheme.typography.titleMedium); Text("Una vista cómoda con poca luz",color=TextoGris) }; com.tecsup.vigiaire.ui.components.ThemeSwitch(checked=Apariencia.noche.value,onCheckedChange={Apariencia.noche.value=it}) } }
+ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) { Text("Texto ampliado",Modifier.weight(1f),color=TextoOscuro); com.tecsup.vigiaire.ui.components.ThemeSwitch(Apariencia.textoGrande.value,{Apariencia.textoGrande.value=it}) }
+ Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) { Text("Contraste reforzado",Modifier.weight(1f),color=TextoOscuro); com.tecsup.vigiaire.ui.components.ThemeSwitch(Apariencia.contraste.value,{Apariencia.contraste.value=it}) }
+ Text("Esta cuenta de demostración utiliza credenciales compartidas; el cambio de contraseña no está habilitado.",color=TextoGris)
+ Button(onClick={Repositorio.cerrarSesion();onCerrarSesion()},modifier=Modifier.fillMaxWidth().heightIn(min=52.dp),colors=ButtonDefaults.buttonColors(containerColor=RojoSuave,contentColor=RojoAlerta)) { Text("Cerrar sesión") }
+ }
+ }
 }

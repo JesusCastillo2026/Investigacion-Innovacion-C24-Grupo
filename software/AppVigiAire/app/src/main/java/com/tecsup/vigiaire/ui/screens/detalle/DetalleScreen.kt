@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.detalle
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedButton
+import com.tecsup.vigiaire.ui.components.InfoAccordion
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -76,11 +79,12 @@ fun DetalleScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+            GlassCard(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Column(Modifier.fillMaxWidth().padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.Air, contentDescription = null, tint = live?.estado?.color ?: TextoGris)
                     Text(live?.gasAdc?.toString() ?: "—", fontSize = VigiAireTypeScale.Display, fontWeight = FontWeight.Bold, color = TextoOscuro)
                     Text("ADC · escala de 0 a 4095", fontSize = VigiAireTypeScale.Body, color = TextoGris)
+                    Text(live?.let { "${it.estado.titulo}: ${it.estado.explicacion}" } ?: "Conecta Wokwi para interpretar una lectura.", fontSize = VigiAireTypeScale.Body, color = TextoGris)
                     Text(live?.status ?: "Sin lectura vigente", fontSize = VigiAireTypeScale.Section, fontWeight = FontWeight.Bold, color = live?.estado?.color ?: TextoGris)
                     Text(live?.let { "Recibido ${formatTime(it.receivedAt)} · mensaje #${it.sequence}" } ?: "Estado de conexión: ${connection.label()}", fontSize = VigiAireTypeScale.Label, color = TextoGris)
                 }
@@ -91,7 +95,7 @@ fun DetalleScreen(currentRoute: String, onNavigate: (String) -> Unit) {
                 MetricCard("Máximo de la sesión", max?.gasAdc?.toString() ?: "—", "ADC", Icons.Default.Router, AzulPrimario, AzulClaro, Modifier.weight(1f))
             }
 
-            Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
+            GlassCard(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = AzulClaro)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Info, contentDescription = null, tint = AzulPrimario)

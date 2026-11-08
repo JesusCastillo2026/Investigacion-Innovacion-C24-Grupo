@@ -3,8 +3,9 @@ package com.tecsup.vigiaire.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,17 +19,15 @@ import com.tecsup.vigiaire.ui.screens.recomendacion.RecomendacionScreen
 import com.tecsup.vigiaire.ui.screens.splash.SplashScreen
 import com.tecsup.vigiaire.ui.screens.tendencia.TendenciaScreen
 import com.tecsup.vigiaire.ui.screens.noticias.NoticiasScreen
-import com.tecsup.vigiaire.data.network.MqttVigiAireClient
 
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
-    LaunchedEffect(Unit) { MqttVigiAireClient.connect() }
-
     NavHost(
         navController = navController,
         startDestination = Pantalla.Splash.ruta,
+        modifier = Modifier.safeDrawingPadding(),
         enterTransition = { fadeIn(animationSpec = tween(350)) },
         exitTransition = { fadeOut(animationSpec = tween(350)) },
         popEnterTransition = { fadeIn(animationSpec = tween(350)) },
@@ -58,6 +57,7 @@ fun AppNavigation(
 
         // 3. Home / Dashboard
         composable(Pantalla.Home.ruta) {
+            com.tecsup.vigiaire.ui.components.BienvenidaPorArranque()
             HomeScreen(
                 currentRoute = Pantalla.Home.ruta,
                 onNavigate = { ruta ->
@@ -137,6 +137,7 @@ fun AppNavigation(
             )
         }
 
+        composable("notificaciones") { com.tecsup.vigiaire.ui.screens.informacion.NotificacionesScreen { navController.popBackStack() } }
         composable("informacion") { com.tecsup.vigiaire.ui.screens.informacion.InformacionScreen(onVolver = { navController.popBackStack() }) }
 
         // 8. Perfil de Usuario

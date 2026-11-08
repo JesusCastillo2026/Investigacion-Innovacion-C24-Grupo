@@ -10,6 +10,7 @@ import com.tecsup.vigiaire.ui.theme.VigiAireTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.tecsup.vigiaire.data.network.MqttVigiAireClient.initialize(applicationContext)
         enableEdgeToEdge()
         setContent {
             VigiAireTheme {

@@ -3,38 +3,331 @@
   "author": "Equipo VigiAire",
   "editor": "wokwi",
   "parts": [
-    { "type": "wokwi-esp32-devkit-v1", "id": "esp32", "top": 40, "left": 20, "attrs": {} },
-    { "type": "wokwi-gas-sensor", "id": "mq2", "top": 70, "left": 370, "attrs": { "ppm": "400", "threshold": "4.4" } },
-    { "type": "wokwi-lcd1602", "id": "lcd", "top": 290, "left": 345, "attrs": { "pins": "i2c" } },
-    { "type": "wokwi-led", "id": "ledG", "top": 130, "left": 600, "attrs": { "color": "green" } },
-    { "type": "wokwi-led", "id": "ledY", "top": 195, "left": 600, "attrs": { "color": "yellow" } },
-    { "type": "wokwi-led", "id": "ledR", "top": 260, "left": 600, "attrs": { "color": "red" } },
-    { "type": "wokwi-servo", "id": "extractor", "top": 360, "left": 610, "attrs": { "horn": "single" } },
-    { "type": "wokwi-resistor", "id": "rG", "top": 130, "left": 500, "attrs": { "value": "220" } },
-    { "type": "wokwi-resistor", "id": "rY", "top": 195, "left": 500, "attrs": { "value": "220" } },
-    { "type": "wokwi-resistor", "id": "rR", "top": 260, "left": 500, "attrs": { "value": "220" } }
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp32",
+      "top": -206.5,
+      "left": 187,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-gas-sensor",
+      "id": "mq2",
+      "top": 233.1,
+      "left": 439,
+      "attrs": {
+        "ppm": "400",
+        "threshold": "4.4"
+      }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": 44.8,
+      "left": 226.4,
+      "attrs": {
+        "pins": "i2c"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledG",
+      "top": -186,
+      "left": 503,
+      "attrs": {
+        "color": "green"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledY",
+      "top": -128.4,
+      "left": 503,
+      "attrs": {
+        "color": "yellow"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledR",
+      "top": -61.2,
+      "left": 503,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rG",
+      "top": -130.45,
+      "left": 422.4,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rY",
+      "top": -63.25,
+      "left": 422.4,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rR",
+      "top": -5.65,
+      "left": 422.4,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "id": "stepper",
+      "left": 163.2,
+      "top": 209.2,
+      "attrs": {
+        "display": "angle",
+        "arrow": "orange",
+        "size": "17"
+      },
+      "type": "wokwi-stepper-motor"
+    },
+    {
+      "id": "driver",
+      "left": 360,
+      "top": 250,
+      "attrs": {},
+      "type": "wokwi-a4988"
+    }
   ],
   "connections": [
-    [ "mq2:VCC", "esp32:VIN", "red", [] ],
-    [ "mq2:GND", "esp32:GND.1", "black", [] ],
-    [ "mq2:AOUT", "esp32:D34", "green", [] ],
-    [ "mq2:DOUT", "esp32:D32", "blue", [] ],
-    [ "lcd:GND", "esp32:GND.1", "black", [] ],
-    [ "lcd:VCC", "esp32:VIN", "red", [] ],
-    [ "lcd:SDA", "esp32:D21", "blue", [] ],
-    [ "lcd:SCL", "esp32:D22", "blue", [] ],
-    [ "esp32:D25", "rG:1", "green", [] ],
-    [ "rG:2", "ledG:A", "green", [] ],
-    [ "ledG:C", "esp32:GND.1", "black", [] ],
-    [ "esp32:D26", "rY:1", "yellow", [] ],
-    [ "rY:2", "ledY:A", "yellow", [] ],
-    [ "ledY:C", "esp32:GND.1", "black", [] ],
-    [ "esp32:D27", "rR:1", "red", [] ],
-    [ "rR:2", "ledR:A", "red", [] ],
-    [ "ledR:C", "esp32:GND.1", "black", [] ],
-    [ "extractor:V+", "esp32:VIN", "red", [] ],
-    [ "extractor:GND", "esp32:GND.1", "black", [] ],
-    [ "extractor:PWM", "esp32:D18", "orange", [] ]
+    [
+      "mq2:VCC",
+      "esp32:VIN",
+      "red",
+      [
+        "h19.2",
+        "v-500.1",
+        "h-432",
+        "v172.8"
+      ]
+    ],
+    [
+      "mq2:GND",
+      "esp32:GND.1",
+      "black",
+      [
+        "h9.6",
+        "v-480.8",
+        "h-259.2",
+        "v153.7"
+      ]
+    ],
+    [
+      "mq2:AOUT",
+      "esp32:D34",
+      "green",
+      [
+        "h28.8",
+        "v-480",
+        "h-422.4",
+        "v77"
+      ]
+    ],
+    [
+      "mq2:DOUT",
+      "esp32:D32",
+      "blue",
+      [
+        "h38.4",
+        "v-499.5",
+        "h-441.6",
+        "v105.7"
+      ]
+    ],
+    [
+      "lcd:GND",
+      "esp32:GND.1",
+      "black",
+      [
+        "h-9.6",
+        "v-38.4",
+        "h115.2",
+        "v-95.9"
+      ]
+    ],
+    [
+      "lcd:VCC",
+      "esp32:VIN",
+      "red",
+      [
+        "h-48",
+        "v-134.3"
+      ]
+    ],
+    [
+      "lcd:SDA",
+      "esp32:D21",
+      "blue",
+      [
+        "h-182.4",
+        "v-374.2",
+        "h259.2",
+        "v134.8"
+      ]
+    ],
+    [
+      "lcd:SCL",
+      "esp32:D22",
+      "blue",
+      [
+        "h-192",
+        "v-374.1",
+        "h259.2",
+        "v96.3"
+      ]
+    ],
+    [
+      "esp32:D25",
+      "rG:1",
+      "green",
+      [
+        "h-96",
+        "v134.4",
+        "h297.6",
+        "v-144"
+      ]
+    ],
+    [
+      "rG:2",
+      "ledG:A",
+      "green",
+      [
+        "h46.8",
+        "v-19.2"
+      ]
+    ],
+    [
+      "ledG:C",
+      "esp32:GND.1",
+      "black",
+      [
+        "v9.6",
+        "h-162.8",
+        "v76.9"
+      ]
+    ],
+    [
+      "esp32:D26",
+      "rY:1",
+      "yellow",
+      [
+        "h-86.4",
+        "v115.1",
+        "h297.6",
+        "v-67.2"
+      ]
+    ],
+    [
+      "rY:2",
+      "ledY:A",
+      "yellow",
+      [
+        "h46.8",
+        "v-28.8"
+      ]
+    ],
+    [
+      "ledY:C",
+      "esp32:GND.1",
+      "black",
+      [
+        "v19.2",
+        "h-162.8",
+        "v9.7"
+      ]
+    ],
+    [
+      "esp32:D27",
+      "rR:1",
+      "red",
+      [
+        "h-76.8",
+        "v95.7"
+      ]
+    ],
+    [
+      "rR:2",
+      "ledR:A",
+      "red",
+      [
+        "h46.8",
+        "v-19.2"
+      ]
+    ],
+    [
+      "ledR:C",
+      "esp32:GND.1",
+      "black",
+      [
+        "h0.4",
+        "v9.6",
+        "h-163.2",
+        "v-47.9"
+      ]
+    ],
+    [
+      "driver:1B",
+      "stepper:B-",
+      "purple"
+    ],
+    [
+      "driver:1A",
+      "stepper:B+",
+      "purple"
+    ],
+    [
+      "driver:2A",
+      "stepper:A+",
+      "blue"
+    ],
+    [
+      "driver:2B",
+      "stepper:A-",
+      "blue"
+    ],
+    [
+      "driver:VDD",
+      "esp32:3V3",
+      "red"
+    ],
+    [
+      "driver:GND",
+      "esp32:GND.1",
+      "black"
+    ],
+    [
+      "driver:RESET",
+      "driver:SLEEP",
+      "red"
+    ],
+    [
+      "driver:STEP",
+      "esp32:D18",
+      "orange"
+    ],
+    [
+      "driver:DIR",
+      "esp32:D19",
+      "blue"
+    ],
+    [
+      "driver:ENABLE",
+      "esp32:D23",
+      "yellow"
+    ]
   ],
   "dependencies": {}
 }

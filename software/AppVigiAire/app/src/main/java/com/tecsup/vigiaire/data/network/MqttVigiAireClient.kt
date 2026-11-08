@@ -18,14 +18,29 @@ import java.util.UUID
 object MqttVigiAireClient {
     const val BROKER = "tcp://broker.hivemq.com:1883"
     const val TOPIC = "vigiaire/c24d/grupo4/9f3c7d8b/telemetry"
+    const val COMMAND_TOPIC = "vigiaire/c24d/grupo4/9f3c7d8b/command"
     const val LIVE_TIMEOUT_MS = 10_000L
     const val MAX_SESSION_READINGS = 2_000
 
+    private var prefs: android.content.SharedPreferences? = null
+    fun initialize(context: android.content.Context) {
+        prefs=context.getSharedPreferences("vigiaire_history",0)
+        runCatching { val a=org.json.JSONArray(prefs?.getString("history","[]")); avisos.value=List(a.length()){a.getString(it)} }
+        _sessionNumber.value=prefs?.getInt("day",1) ?: 1
+    }
+    private fun saveHistory() { prefs?.edit()?.putString("history",org.json.JSONArray(avisos.value).toString())?.putInt("day",_sessionNumber.value)?.apply() }
+    private var transitions=0
+    val avisos = MutableStateFlow<List<String>>(emptyList())
     private val _state = MutableStateFlow(MqttConnectionState.DISCONNECTED)
     val state: StateFlow<MqttConnectionState> = _state.asStateFlow()
 
     private val _latestReading = MutableStateFlow<MqttGasReading?>(null)
     val latestReading: StateFlow<MqttGasReading?> = _latestReading.asStateFlow()
+
+    // Optimistic UI state: reflect the user's tap immediately, then reconcile
+    // it with the next telemetry packet from the ESP32/Wokwi simulation.
+    private val _extractorEnabled = MutableStateFlow(false)
+    val extractorEnabled: StateFlow<Boolean> = _extractorEnabled.asStateFlow()
 
     private val _sessionReadings = MutableStateFlow<List<MqttGasReading>>(emptyList())
     val sessionReadings: StateFlow<List<MqttGasReading>> = _sessionReadings.asStateFlow()
@@ -92,11 +107,13 @@ object MqttVigiAireClient {
                         require(EstadoSensor.from(rawStatus) != EstadoSensor.DESCONOCIDO)
                         val gasAdc = json.getInt("gasAdc")
                         require(gasAdc in 0..4095) { "La lectura ADC del ESP32 debe estar entre 0 y 4095." }
+                        _extractorEnabled.value = json.optBoolean("extractorEnabled", false)
                         MqttGasReading(
                             gasAdc = gasAdc,
                             status = rawStatus,
                             sequence = json.optLong("seq", 0L),
                             uptimeMs = json.optLong("uptimeMs", 0L).coerceAtLeast(0L),
+                            extractorEnabled = json.optBoolean("extractorEnabled", false),
                             receivedAt = System.currentTimeMillis()
                         )
                     }.onSuccess(::recordReading)
@@ -146,12 +163,57 @@ object MqttVigiAireClient {
         }
     }
 
+    /** Sends a manual extraction animation command to the running Wokwi ESP32. */
+    fun setExtractorEnabled(enabled: Boolean) {
+        val mqttClient = client
+        if (_state.value != MqttConnectionState.CONNECTED || mqttClient?.isConnected != true) {
+            _error.value = "Conecta la app y mantén Wokwi en ejecución para controlar la extracción."
+            return
+        }
+
+        val payload = JSONObject()
+            .put("device", "VigiAire-App")
+            .put("command", "extractor")
+            .put("enabled", enabled)
+            .toString()
+        val message = MqttMessage(payload.toByteArray(Charsets.UTF_8)).apply {
+            qos = 0
+            isRetained = false
+        }
+
+        // Update immediately instead of waiting for the next sensor packet.
+        val previousState = _extractorEnabled.value
+        _extractorEnabled.value = enabled
+
+        runCatching {
+            mqttClient.publish(COMMAND_TOPIC, message, null, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: org.eclipse.paho.client.mqttv3.IMqttToken?) {
+                    _error.value = null
+                }
+
+                override fun onFailure(
+                    asyncActionToken: org.eclipse.paho.client.mqttv3.IMqttToken?,
+                    exception: Throwable?
+                ) {
+                    _extractorEnabled.value = previousState
+                    _error.value = exception?.message ?: "No se pudo enviar la orden de extracción."
+                }
+            })
+        }.onFailure {
+            _extractorEnabled.value = previousState
+            _error.value = it.message ?: "No se pudo enviar la orden de extracción."
+        }
+    }
+
     private fun recordReading(reading: MqttGasReading) {
         val rebooted = lastUptimeMs != null &&
             (reading.uptimeMs < lastUptimeMs!! || reading.sequence < (lastSequence ?: 0L))
 
         if (rebooted) {
+            avisos.value = (listOf("Día de prueba ${_sessionNumber.value} finalizado: ${_sessionReadingCount.value} lecturas. Inicio ${_sessionStartedAt.value?.let { java.util.Date(it) }}; fin ${_latestReading.value?.receivedAt?.let { java.util.Date(it) }}. Cambios de estado: $transitions. Datos simulados. Mínimo ${_sessionMinimum.value?.gasAdc}, promedio ${_sessionAverage.value}, máximo ${_sessionMaximum.value?.gasAdc} ADC. Se inició un nuevo día al reiniciar el circuito.") + avisos.value).take(50)
             _sessionNumber.value += 1
+            saveHistory()
+            transitions=0
             _sessionReadings.value = emptyList()
             _sessionStartedAt.value = reading.receivedAt
             _sessionReadingCount.value = 0L
@@ -163,6 +225,7 @@ object MqttVigiAireClient {
             _sessionStartedAt.value = reading.receivedAt
         }
 
+        if (_latestReading.value != null && !rebooted && _latestReading.value?.status != reading.status) transitions++
         lastUptimeMs = reading.uptimeMs
         lastSequence = reading.sequence
         _latestReading.value = reading
@@ -204,6 +267,7 @@ data class MqttGasReading(
     val status: String,
     val sequence: Long,
     val uptimeMs: Long,
+    val extractorEnabled: Boolean = false,
     val receivedAt: Long
 ) {
     val estado: EstadoSensor get() = EstadoSensor.from(status)

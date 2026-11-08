@@ -1,5 +1,6 @@
 package com.tecsup.vigiaire.ui.screens.recomendacion
 
+import com.tecsup.vigiaire.ui.components.GlassCard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -76,7 +77,7 @@ fun RecomendacionScreen(currentRoute: String, onNavigate: (String) -> Unit) {
             TrafficLightWidget(estadoActivo = live?.estado)
             RecommendationCard(live?.estado)
 
-            Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
+            GlassCard(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Blanco)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Info, contentDescription = null, tint = AzulPrimario)
