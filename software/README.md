@@ -3,7 +3,7 @@
 La aplicación Android del proyecto se desarrolla y ejecuta desde esta carpeta:
 
 - **[AppVigiAire](./AppVigiAire/):** aplicación Android principal en Kotlin y Jetpack Compose. Presenta lecturas, estado, tendencias de sesión y consejos.
-- **[AppVigiAireLCD](./AppVigiAire/app-lcd/):** módulo Android independiente con una interfaz inspirada en la pantalla LCD del prototipo. Muestra el valor ADC y el estado en un medidor circular, y se suscribe al mismo tema MQTT de Wokwi.
+- **[AppVigiAireLCD](./AppVigiAireLCD/):** proyecto Android separado, con una interfaz inspirada en la pantalla LCD del prototipo. Muestra el valor ADC y el estado en un medidor circular y se suscribe al mismo tema MQTT de Wokwi.
 
 El circuito electrónico simulado y su firmware se encuentran en [hardware/Circuito_Simulado_Wokwi](../hardware/Circuito_Simulado_Wokwi/). La app recibe desde Wokwi por MQTT el valor ADC y el estado.
 
