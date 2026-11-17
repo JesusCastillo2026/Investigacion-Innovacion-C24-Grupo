@@ -23,5 +23,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "AppVigiAire"
-include(":app")
+include(":app", ":app-lcd")
  
