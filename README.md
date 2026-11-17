@@ -47,7 +47,7 @@
 
 VigiAire explora cómo ayudar a una persona a decidir cuándo ventilar una habitación cercana a una avenida con tráfico. El concepto inicial contemplaba un dispositivo físico para medir partículas y orientar esa decisión. Desde la semana 8, el alcance del equipo cambió: el prototipo electrónico y su comunicación con la aplicación se desarrollan y prueban de manera virtual.
 
-El circuito funcional está simulado en Wokwi con un ESP32, una señal de gas/humo, una pantalla LCD y tres LEDs. La aplicación Android recibe por MQTT la lectura analógica simulada y el estado del circuito. La maqueta física de cartón presentada en el material representa la carcasa; no contiene un circuito electrónico funcional.
+El circuito funcional está simulado en Wokwi con un ESP32, una señal de gas/humo, una pantalla LCD, tres LEDs y un motor paso a paso con controlador A4988. La aplicación Android recibe por MQTT la lectura analógica simulada, el estado del circuito y la activación de la extracción. También se desarrolló una aplicación separada que representa la pantalla que tendría el producto, con un medidor circular y el estado del extractor. La maqueta física de cartón presentada en el material representa la carcasa; no contiene un circuito electrónico funcional.
 
 <a id="lecturas-alcance"></a>
 ## Alcance y límites de las lecturas
@@ -63,6 +63,9 @@ Para medir PM2.5 en un proyecto real se necesitaría un sensor óptico de partí
 - Clasifica la señal con umbrales de demostración y presenta `VENTILE`, `ESPERE` o `ALERTA`.
 - Muestra la lectura y el estado en la LCD 16×2 y comunica el estado con LEDs verde, amarillo y rojo.
 - Publica los datos por MQTT desde Wokwi; la app Android se suscribe al mismo tema para reflejar la lectura recibida.
+- Permite activar o detener desde la sección Equipo de la app el giro simulado del motor paso a paso, controlado por el ESP32 mediante el A4988.
+- Presenta el estado de extracción activada o desactivada en los mensajes MQTT para sincronizarlo con la pantalla simulada del producto.
+- Incluye una interfaz Android independiente que representa el LCD del prototipo: medidor circular de ADC, estado ambiental, conexión y extracción de aire.
 - Presenta en la app inicio, detalle de lectura, consejo, equipo/dispositivo, tendencias de la sesión y un dato informativo del día. El dato del día es contenido informativo, no una medición adicional.
 - Actualiza la tendencia con los mensajes recibidos durante la sesión de simulación. Los resúmenes describen la sesión de prueba y no un historial ambiental real.
 
@@ -77,14 +80,20 @@ Los umbrales son parámetros demostrativos del programa; los estados no represen
 | LCD 16×2 con interfaz I²C | Muestra el valor ADC y el estado actual. |
 | LED verde, amarillo y rojo | Representan visualmente los estados del prototipo. |
 | Resistencias de 220 Ω | Limitan la corriente de los LEDs en el esquema simulado. |
+| Motor paso a paso bipolar NEMA 17 | Gira continuamente en un sentido cuando se activa la extracción desde la app; es una representación visual y no produce succión ni mueve aire. |
+| Controlador A4988 | Recibe del ESP32 las señales STEP, DIR y ENABLE necesarias para controlar el motor paso a paso. |
 | Cables virtuales | Representan alimentación, tierra y conexiones de señal entre componentes. |
 
 El detalle de pines, tema MQTT, formato de mensaje y pasos de ejecución está en [la guía del circuito simulado](hardware/Circuito_Simulado_Wokwi/README.md).
 
+### Pantalla LCD simulada del producto
+
+La interfaz [AppVigiAireLCD](software/AppVigiAireLCD/) es un proyecto Android separado de la app de usuario. Simula lo que se visualizaría en la pantalla integrada del prototipo: presenta el medidor circular con la lectura ADC, el estado `VENTILE`, `ESPERE` o `ALERTA`, el enlace con el circuito y el estado de extracción activada o desactivada. Recibe los datos publicados por el ESP32 mediante el mismo tema MQTT. Esta pantalla es una representación del LCD del producto y no incorpora sensores adicionales.
+
 <a id="aplicacion-archivos"></a>
 ## Aplicación y archivos del proyecto
 
-La app está en [`software/AppVigiAire`](software/AppVigiAire/) y se desarrolló con Kotlin y Jetpack Compose. El circuito está organizado en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/); los modelos de la carcasa están en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
+La app principal está en [`software/AppVigiAire`](software/AppVigiAire/) y se desarrolló con Kotlin y Jetpack Compose. La pantalla LCD simulada es el proyecto independiente [`software/AppVigiAireLCD`](software/AppVigiAireLCD/). El circuito está organizado en [`hardware/Circuito_Simulado_Wokwi`](hardware/Circuito_Simulado_Wokwi/); los modelos de la carcasa están en [`hardware/Modelo_3D_Tinkercad`](hardware/Modelo_3D_Tinkercad/).
 
 - [Abrir circuito simulado en Wokwi](https://wokwi.com/projects/478264195609475073)
 - [Abrir modelo 3D en Tinkercad](https://www.tinkercad.com/things/dmxYdAp2bKB-copy-of-vigiaire/edit?sharecode=kPaqYq77BRIRYFCdsBkRbAXHNW39ilBV4M7bEdHDeqQ)
@@ -98,6 +107,7 @@ Para ver lecturas en la app, inicia la simulación y luego conecta la app al bro
 - [`hardware/Circuito_Simulado_Wokwi/`](hardware/Circuito_Simulado_Wokwi/): firmware y diagrama del circuito virtual.
 - [`hardware/Modelo_3D_Tinkercad/`](hardware/Modelo_3D_Tinkercad/): referencia Tinkercad y modelos STL.
 - [`software/AppVigiAire/`](software/AppVigiAire/): aplicación Android.
+- [`software/AppVigiAireLCD/`](software/AppVigiAireLCD/): simulador Android de la pantalla LCD integrada del prototipo.
 
 ## Uso de herramientas de IA
 
@@ -118,3 +128,4 @@ La versión del repositorio documenta un prototipo electrónico simulado. Las le
 **VigiAire · Investigación e Innovación Tecnológica · Sección C24**
 
 </div>
+
